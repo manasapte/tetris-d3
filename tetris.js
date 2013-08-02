@@ -4,6 +4,11 @@ $(document).ready(function() {
     var board = [],
         width = 10,
         height = 22,
+        currentPiece,
+        currentIndex,
+        currentX = 0,
+        currentY = 0,
+        sizes = [4,2,3,3,3,3,3],
         pieces = [
           [  [1, 1, 1, 1],
              [0, 0, 0, 0],
@@ -59,7 +64,7 @@ $(document).ready(function() {
         setInterval(tick,1000)
     }
  
-    var renderBoard = function() {
+    var initRender = function() {
       var row,
           cells;
       row = d3.select('svg').selectAll('g')
@@ -78,8 +83,46 @@ $(document).ready(function() {
           
     }
 
+    var renderBoard = function() {
+      d3.select('svg')
+          .selectAll('g')
+            .data(board)
+          .selectAll('rect')
+               .data(function(d,i){return d;})
+          .appenid('rect')
+               .attr('x',function(d,i){return i*22;})
+               .attr('width',20)
+               .attr('height',20)
+               .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
+    }
+
+    
+    var generatePiece = function() {
+      var size,
+          pRow=0,
+          pCol=0;
+      currentIndex = Math.floor(Math.random()*pieces.length)   
+      currentPiece = pieces[currentIndex]; 
+      size = sizes[currentIndex];
+      currentX = (width - size) / 2;
+      for(i=currentY;i<(currentY+size) && i<height;i++) {
+        pCol = 0;
+        for(j=currentX;j<currentX+size;j++) {
+          board[i][j] = currentPiece[pRow][pCol++]
+
+        } 
+        pRow++;
+      }
+    }
+
     var tick = function() {
-      
+      if(currentPiece == -1) {
+        generatePiece(); 
+      }
+      else {
+        advancePiece();
+      } 
+      renderBoard();
     }
     
     initBoard();
