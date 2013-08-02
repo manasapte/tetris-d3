@@ -5,7 +5,7 @@ $(document).ready(function() {
         width = 10,
         height = 22,
         currentPiece,
-        currentIndex,
+        currentIndex = -1,
         currentX = 0,
         currentY = 0,
         sizes = [4,2,3,3,3,3,3],
@@ -49,6 +49,7 @@ $(document).ready(function() {
         }
         board.push(row)
       }
+      initRender();
     }
 
     var rotate = function(piece) {
@@ -89,7 +90,6 @@ $(document).ready(function() {
             .data(board)
           .selectAll('rect')
                .data(function(d,i){return d;})
-          .appenid('rect')
                .attr('x',function(d,i){return i*22;})
                .attr('width',20)
                .attr('height',20)
@@ -114,10 +114,16 @@ $(document).ready(function() {
         pRow++;
       }
     }
+ 
+    var advancePiece = function() {
+    
+    }
 
     var tick = function() {
-      if(currentPiece == -1) {
+      console.log("in tick and current index: "+currentIndex);
+      if(currentIndex == -1) {
         generatePiece(); 
+        console.log("board after generate piece: "+board);
       }
       else {
         advancePiece();
