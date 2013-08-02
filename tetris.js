@@ -50,7 +50,7 @@ $(document).ready(function() {
       newpiece = piece.slice();
       for(i=0;i<piece.length;i++) {
         for(j=0;j<piece.length;j++) {
-          newpiece[i][j] = piece[(piece.length-1)-j][i]
+          newpiece[j][(piece.length-1)-i] = piece[i][j];
         } 
       }
     }
