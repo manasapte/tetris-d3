@@ -102,9 +102,11 @@ $(document).ready(function() {
           pRow=0,
           pCol=0;
       currentIndex = Math.floor(Math.random()*pieces.length)   
+      currentY = 0;
       currentPiece = pieces[currentIndex]; 
       size = sizes[currentIndex];
-      currentX = (width - size) / 2;
+      currentX = Math.floor((width - size) / 2);
+      console.log("currentx: "+currentX)
       for(i=currentY;i<(currentY+size) && i<height;i++) {
         pCol = 0;
         for(j=currentX;j<currentX+size;j++) {
