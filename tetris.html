@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    D3 Tetris
+  </title>
+  <script type="text/javascript" src="d3/d3.v3.min.js"></script>
+  <script type="text/javascript" src="jquery.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+$(document).ready(function() {
+  console.log("in here");
+  function tetris() {
+    console.log("in tetris");
+    var board = [],
+        width = 10,
+        height = 22;
+       
+    var initBoard = function() {
+      var row = [];
+      for(i=0;i<width;i++) {
+        for(j=0;j<width;j++) {
+          row.push(0) 
+        }
+        board.push(row)
+      }
+    }
+ 
+    var renderBoard = function() {
+      var row,
+          cells;
+      row = d3.select('svg').selectAll('g')
+                .data(board)
+              .enter()
+              .append('g')
+                .attr('transform',function(d,i){ return 'translate(0,'+i*12+')';})
+      cells = row.selectAll('rect')
+                   .data(function(d,i){return d;})
+                 .enter()
+                 .append('rect')
+                   .attr('x',function(d,i){return i*12;})
+                   .attr('width',10)
+                   .attr('height',10)
+                   .attr('fill','2DD64F')
+          
+    }
+    
+    initBoard();
+    console.log("board after init board: "+board);
+    renderBoard();
+  }
+  tetris(); 
+});
+</script>
+<svg id="tetris-board">
+</svg>
+</body>
+</html>
