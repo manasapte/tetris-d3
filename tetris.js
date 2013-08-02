@@ -1,10 +1,32 @@
 $(document).ready(function() {
-  console.log("in here");
   function tetris() {
     console.log("in tetris");
     var board = [],
         width = 10,
-        height = 22;
+        height = 22,
+        pieces = [
+          [  [0, 0, 0, 0],
+             [1, 1, 1, 1],
+          ],
+          [  [0, 1, 1, 0],
+             [0, 1, 1, 0]
+          ],
+          [  [0, 1, 0, 0],
+             [1, 1, 1, 0]
+          ],
+          [  [0, 1, 1, 0],
+             [1, 1, 0, 0]
+          ],
+          [  [1, 1, 0, 0],
+             [0, 1, 1, 0]
+          ],
+          [  [1, 0, 0, 0],
+             [1, 1, 1, 0]
+          ],
+          [  [0, 0, 1, 0],
+             [1, 1, 1, 0]
+          ]
+        ];
        
     var initBoard = function() {
       var row;
