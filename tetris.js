@@ -106,11 +106,10 @@ $(document).ready(function() {
       currentPiece = pieces[currentIndex]; 
       size = sizes[currentIndex];
       currentX = Math.floor((width - size) / 2);
-      console.log("currentx: "+currentX)
       for(i=currentY;i<(currentY+size) && i<height;i++) {
         pCol = 0;
         for(j=currentX;j<currentX+size;j++) {
-          board[i][j] = currentPiece[pRow][pCol++]
+          board[i][j] = currentPiece[pRow][pCol++];
 
         } 
         pRow++;
@@ -118,7 +117,20 @@ $(document).ready(function() {
     }
  
     var advancePiece = function() {
-    
+      var size,
+          pRow = 0,
+          pCol = 0;
+      size = sizes[currentIndex];
+      for(k=currentX;k<currentX+size;k++) {
+        board[currentY][k] = 0;
+      }
+      for(i=currentY+1;i<currentY+size;i++) {
+        for(j=currentX;j<currentX+size;j++) {
+          board[i][j] = currentPiece[pRow][pCol++];         
+        }
+        pRow++; 
+      }
+      currentY++;
     }
 
     var tick = function() {
@@ -139,5 +151,33 @@ $(document).ready(function() {
     start();
   }
   tetris(); 
+  
+  //Key handlers:
+
+  $(document).keydown(function(e){
+      if (e.keyCode == 37) { 
+         alert( "left pressed" );
+         return false;
+      }
+      if (e.keyCode == 38) { 
+         alert( "up pressed" );
+         return false;
+      }
+      if (e.keyCode == 39) { 
+         alert( "right pressed" );
+         return false;
+      }
+      if (e.keyCode == 40) { 
+         alert( "down pressed" );
+         return false;
+      }
+      if (e.keyCode == 32) { 
+         alert( "space pressed" );
+         return false;
+      }
+
+  });
+
+
 });
 
