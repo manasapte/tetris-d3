@@ -106,15 +106,52 @@ $(document).ready(function() {
       currentPiece = pieces[currentIndex]; 
       size = sizes[currentIndex];
       currentX = Math.floor((width - size) / 2);
-      for(i=currentY;i<(currentY+size) && i<height;i++) {
+      for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
-        for(j=currentX;j<currentX+size;j++) {
+        for(j=currentX;j<(currentX+size);j++) {
           board[i][j] = currentPiece[pRow][pCol++];
 
         } 
         pRow++;
       }
     }
+    
+    var moveLeft = function() {
+      var size,
+          pRow = 0,
+          pCol = 0; 
+      size = sizes[currentIndex];
+      for(k=currentY;k<(currentY+size);k++) {
+        board[k][(currentX+size-1)] = 0
+      }
+      for(i=currentY;i<(currentY+size);i++) {
+        pCol = 0;
+        for(j=currentX-1;j<(currentX-1+size);j++) {
+          board[i][j] = currentPiece[pRow][pCol++];         
+        }
+        pRow++; 
+      }
+      currentX--;
+    }
+
+    var moveRight = function() {
+      var size,
+          pRow = 0,
+          pCol = 0; 
+      size = sizes[currentIndex];
+      for(k=currentY;k<(currentY+size);k++) {
+        board[k][currentX] = 0
+      }
+      for(i=currentY;i<(currentY+size);i++) {
+        pCol = 0;
+        for(j=currentX+1;j<(currentX+1+size);j++) {
+          board[i][j] = currentPiece[pRow][pCol++];         
+        }
+        pRow++; 
+      }
+      currentX++;
+    }
+
  
     var advancePiece = function() {
       var size,
@@ -124,8 +161,9 @@ $(document).ready(function() {
       for(k=currentX;k<currentX+size;k++) {
         board[currentY][k] = 0;
       }
-      for(i=currentY+1;i<currentY+size;i++) {
-        for(j=currentX;j<currentX+size;j++) {
+      for(i=currentY+1;i<(currentY+1+size);i++) {
+        pCol = 0;
+        for(j=currentX;j<(currentX+size);j++) {
           board[i][j] = currentPiece[pRow][pCol++];         
         }
         pRow++; 
@@ -149,35 +187,36 @@ $(document).ready(function() {
     console.log("board after init board: "+board);
     renderBoard();
     start();
+    //Key handlers:
+
+    $(document).keydown(function(e){
+        if (e.keyCode == 37) { 
+           moveLeft();
+           renderBoard();
+        }
+        if (e.keyCode == 38) { 
+           alert( "up pressed" );
+           return false;
+        }
+        if (e.keyCode == 39) { 
+           moveRight();
+           renderBoard();
+        }
+        if (e.keyCode == 40) { 
+           alert( "down pressed" );
+           return false;
+        }
+        if (e.keyCode == 32) { 
+           alert( "space pressed" );
+           return false;
+        }
+
+    });
+
   }
   tetris(); 
   
-  //Key handlers:
-
-  $(document).keydown(function(e){
-      if (e.keyCode == 37) { 
-         alert( "left pressed" );
-         return false;
-      }
-      if (e.keyCode == 38) { 
-         alert( "up pressed" );
-         return false;
-      }
-      if (e.keyCode == 39) { 
-         alert( "right pressed" );
-         return false;
-      }
-      if (e.keyCode == 40) { 
-         alert( "down pressed" );
-         return false;
-      }
-      if (e.keyCode == 32) { 
-         alert( "space pressed" );
-         return false;
-      }
-
-  });
-
+ 
 
 });
 
