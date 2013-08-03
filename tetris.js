@@ -8,6 +8,7 @@ $(document).ready(function() {
         currentIndex = -1,
         currentX = 0,
         currentY = 0,
+        motionStarted = 0;
         sizes = [4,2,3,3,3,3,3],
         pieces = [
           [  [1, 1, 1, 1],
@@ -153,7 +154,7 @@ $(document).ready(function() {
     }
 
  
-    var advancePiece = function() {
+    var moveDown = function() {
       var size,
           pRow = 0,
           pCol = 0;
@@ -178,7 +179,7 @@ $(document).ready(function() {
         console.log("board after generate piece: "+board);
       }
       else {
-        advancePiece();
+        moveDown();
       } 
       renderBoard();
     }
@@ -203,8 +204,7 @@ $(document).ready(function() {
            renderBoard();
         }
         if (e.keyCode == 40) { 
-           alert( "down pressed" );
-           return false;
+          moveDown();
         }
         if (e.keyCode == 32) { 
            alert( "space pressed" );
