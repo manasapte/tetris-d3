@@ -160,11 +160,19 @@ $(document).ready(function() {
           pCol = 0;
       size = sizes[currentIndex];
       auxboard = board.map(function(test){ return test.slice(); });
+      console.log("auxboard before going in: "+auxboard);
       for(i=currentY;i<(currentY+size) && i<height;i++) {
+        pCol=0;
         for(j=currentX;j<(currentX+size) && j<width;j++) {
-          auxboard[i][j] = 0;
+          if(currentPiece[pRow][pCol]) {
+            auxboard[i][j] = 0;
+          }
+          pCol++;
         }
+        pRow++;
       }
+      console.log("auxboard after coming out: "+auxboard);
+      pRow = pCol = 0;
       for(i=currentY+1;i<(currentY+1+size) && i<height+size;i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
@@ -172,6 +180,7 @@ $(document).ready(function() {
             console.log("collision by border and board: "+board);
             return false;
           }
+          pCol++;
         }
         pRow++;
       }
@@ -179,8 +188,10 @@ $(document).ready(function() {
       for(i=currentY+1;i<(currentY+1+size) && i<height;i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
+          console.log("COLLISION BOARD: "+auxboard[i][j]+" PIECE: "+currentPiece[pRow][pCol]);
           if(auxboard[i][j] && currentPiece[pRow][pCol]) {
-            console.log("collision by distraction");return false;
+            console.log("collision by distraction");
+            return false;
           }
           pCol++;
         }
