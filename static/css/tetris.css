@@ -1,7 +1,8 @@
 div.score {
   font: 10px sans-serif;
+  width: 218px;
   background-color: steelblue;
-  text-align: right;
+  text-align: left;
   padding: 3px;
   margin: 1px;
   color: white;

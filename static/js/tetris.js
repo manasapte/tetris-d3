@@ -3,7 +3,7 @@ $(document).ready(function() {
     console.log("in tetris");
     var board = [],
         clock,
-        score = 0,
+        score = [0],
         width = 10,
         height = 22,
         currentPiece,
@@ -119,7 +119,7 @@ $(document).ready(function() {
     var initRender = function() {
       var row,
           cells;
-      d3.select('body').selectAll('div.score')
+      d3.select('body').select('div.panel').selectAll('div.score')
                        .data(score)
                        .enter()
                        .append('div')
@@ -148,10 +148,10 @@ $(document).ready(function() {
       var newboard;
       newboard = board.filter(function(test){return test.reduce(function(a,b){return a+b}) != width;})
       if(newboard.length < board.length) {
+        score.push(score.shift() + updateScore(board.length - newboard.length));
         d3.range(board.length - newboard.length).map(function(){
           newboard.unshift(d3.range(width).map(function(){return 0;}));
         });
-        updateScore(board.length - newboard.length);
         board = newboard
         d3.select('svg')
           .selectAll('g')
@@ -167,7 +167,7 @@ $(document).ready(function() {
                .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
 
       }
-      d3.select('body').select('.score')
+      d3.select('body').select('div.panel').selectAll('div.score')
                        .data(score)
                        .text(function(d) { return "Score: "+d; });
     }
@@ -382,12 +382,12 @@ $(document).ready(function() {
     }
 
     var gameOver = function() {
-      console.log("game over!");
+      //console.log("game over!");
       clearInterval(clock);
     }
 
     var tick = function() {
-      console.log("in tick and current index: "+currentIndex);
+      //console.log("in tick and current index: "+currentIndex);
       if(currentIndex == -1) {
         if(!generatePiece()) {
           gameOver();
@@ -404,7 +404,7 @@ $(document).ready(function() {
     }
     
     initBoard();
-    console.log("board after init board: "+board);
+    //console.log("board after init board: "+board);
     renderBoard();
     start();
     //Key handlers:
