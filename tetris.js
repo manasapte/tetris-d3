@@ -127,13 +127,48 @@ $(document).ready(function() {
           pRow = 0,
           pCol = 0; 
       size = sizes[currentIndex];
-      for(k=currentY;k<(currentY+size);k++) {
-        board[k][(currentX+size-1)] = 0
+      auxboard = board.map(function(test){ return test.slice(); });
+      for(i=currentY;i<(currentY+size) && i<height;i++) {
+        pCol=0;
+        for(j=currentX;j<(currentX+size) && j<width;j++) {
+          if(currentPiece[pRow][pCol]) {
+            auxboard[i][j] = 0;
+          }
+          pCol++;
+        }
+        pRow++;
       }
+      pRow = pCol = 0;
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
         for(j=currentX-1;j<(currentX-1+size);j++) {
-          board[i][j] = currentPiece[pRow][pCol++];         
+          if(j<0) {
+            console.log("border collision");
+            return false;
+          }
+          if(currentPiece[pRow][pCol] && auxboard[i][j]) {
+            console.log("piece collision");
+            return false;
+          }
+          pCol++;
+        }
+        pRow++; 
+      }
+      pRow = pCol = 0;
+      for(k=currentY;k<(currentY+size);k++) {
+        if(currentPiece[pRow][size-1]) {
+          board[k][(currentX+size-1)] = 0
+        }
+        pRow++;
+      }
+      pRow = pCol = 0;
+      for(i=currentY;i<(currentY+size);i++) {
+        pCol = 0;
+        for(j=currentX-1;j<(currentX-1+size);j++) {
+          if(currentPiece[pRow][pCol]) {
+            board[i][j] = currentPiece[pRow][pCol];         
+          }
+          pCol++;
         }
         pRow++; 
       }
@@ -165,7 +200,6 @@ $(document).ready(function() {
           pCol = 0;
       size = sizes[currentIndex];
       auxboard = board.map(function(test){ return test.slice(); });
-      console.log("auxboard before going in: "+auxboard);
       for(i=currentY;i<(currentY+size) && i<height;i++) {
         pCol=0;
         for(j=currentX;j<(currentX+size) && j<width;j++) {
@@ -176,13 +210,11 @@ $(document).ready(function() {
         }
         pRow++;
       }
-      console.log("auxboard after coming out: "+auxboard);
       pRow = pCol = 0;
       for(i=currentY+1;i<(currentY+1+size) && i<height+size;i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
           if(currentPiece[pRow][pCol] && i > (height-1)) {
-            console.log("collision by border and board: "+board);
             return false;
           }
           pCol++;
@@ -193,9 +225,7 @@ $(document).ready(function() {
       for(i=currentY+1;i<(currentY+1+size) && i<height;i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
-          console.log("COLLISION BOARD: "+auxboard[i][j]+" PIECE: "+currentPiece[pRow][pCol]);
           if(auxboard[i][j] && currentPiece[pRow][pCol]) {
-            console.log("collision by distraction");
             return false;
           }
           pCol++;
@@ -229,7 +259,6 @@ $(document).ready(function() {
         if(!generatePiece()) {
           gameOver();
         } 
-        console.log("board after generate piece: "+board);
       }
       else {
         if(!moveDown()) {
