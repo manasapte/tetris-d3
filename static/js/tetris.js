@@ -3,6 +3,7 @@ $(document).ready(function() {
     console.log("in tetris");
     var board = [],
         clock,
+        interval = 700,
         score = [0],
         width = 10,
         height = 22,
@@ -113,7 +114,7 @@ $(document).ready(function() {
     }
       
     var start = function() {
-        clock = setInterval(tick,1000)
+        clock = setInterval(tick,interval)
     }
  
     var initRender = function() {
