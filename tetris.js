@@ -159,16 +159,23 @@ $(document).ready(function() {
           pRow = 0,
           pCol = 0;
       size = sizes[currentIndex];
-      if(currentY+1 == height) {
-        console.log("collission due to height");
-        return false;
-      }
-      auxboard = board.slice();
+      auxboard = board.map(function(test){ return test.slice(); });
       for(i=currentY;i<(currentY+size) && i<height;i++) {
         for(j=currentX;j<(currentX+size) && j<width;j++) {
           auxboard[i][j] = 0;
         }
       }
+      for(i=currentY+1;i<(currentY+1+size) && i<height+size;i++) {
+        pCol = 0;
+        for(j=currentX;j<(currentX+size);j++) {
+          if(currentPiece[pRow][pCol] && i > (height-1)) {
+            console.log("collision by border and board: "+board);
+            return false;
+          }
+        }
+        pRow++;
+      }
+      pRow = pCol = 0;
       for(i=currentY+1;i<(currentY+1+size) && i<height;i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
