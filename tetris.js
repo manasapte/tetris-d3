@@ -135,6 +135,7 @@ $(document).ready(function() {
     }
 
     var renderBoard = function() {
+      var newboard;
       d3.select('svg')
           .selectAll('g')
             .data(board)
@@ -147,8 +148,19 @@ $(document).ready(function() {
       newboard = board.filter(function(test){return test.reduce(function(a,b){return a+b}) != width;})
       if(newboard.length < board.length) {
         d3.range(board.length - newboard.length).map(function(){
-          newboard.unshift(d3.range(width).map(function(){return 0;})
+          newboard.unshift(d3.range(width).map(function(){return 0;}))
         });
+        board = newboard
+        d3.select('svg')
+          .selectAll('g')
+            .data(board)
+          .selectAll('rect')
+               .data(function(d,i){return d;}).transition()
+               .attr('x',function(d,i){return i*22;})
+               .attr('width',20)
+               .attr('height',20)
+               .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
+
       }
  
     }
