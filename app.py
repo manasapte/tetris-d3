@@ -4,9 +4,9 @@ import json
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-@app.route('/')
+@app.route('/tetris.html')
 def index():
     return render_template('tetris.html') 
 
-def run():
-    app.run(host="0.0.0.0")
+if __name__ == "__main__":
+    app.run(host="0.0.0.0",port=8000)
