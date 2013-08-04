@@ -180,13 +180,48 @@ $(document).ready(function() {
           pRow = 0,
           pCol = 0; 
       size = sizes[currentIndex];
-      for(k=currentY;k<(currentY+size);k++) {
-        board[k][currentX] = 0
+      auxboard = board.map(function(test){ return test.slice(); });
+      for(i=currentY;i<(currentY+size) && i<height;i++) {
+        pCol=0;
+        for(j=currentX;j<(currentX+size) && j<width;j++) {
+          if(currentPiece[pRow][pCol]) {
+            auxboard[i][j] = 0;
+          }
+          pCol++;
+        }
+        pRow++;
       }
+      pRow = pCol = 0;
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
         for(j=currentX+1;j<(currentX+1+size);j++) {
-          board[i][j] = currentPiece[pRow][pCol++];         
+          if(j>=width) {
+            console.log("border collision");
+            return false;
+          }
+          if(currentPiece[pRow][pCol] && auxboard[i][j]) {
+            console.log("piece collision");
+            return false;
+          }
+          pCol++;
+        }
+        pRow++; 
+      }
+      pRow = pCol = 0;
+      for(k=currentY;k<(currentY+size);k++) {
+        if(currentPiece[pRow][0]) {
+          board[k][currentX] = 0
+        }
+        pRow++;
+      }
+      pRow = pCol = 0;
+      for(i=currentY;i<(currentY+size);i++) {
+        pCol = 0;
+        for(j=currentX+1;j<(currentX+1+size);j++) {
+          if(currentPiece[pRow][pCol]) {
+            board[i][j] = currentPiece[pRow][pCol];         
+          }
+          pCol++;
         }
         pRow++; 
       }
