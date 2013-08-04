@@ -181,10 +181,19 @@ $(document).ready(function() {
         for(j=currentX;j<(currentX+size);j++) {
           if(auxboard[i][j] && currentPiece[pRow][pCol]) {
             console.log("collision by distraction");return false;
-          }       
-          else {
-            auxboard[i][j] = currentPiece[pRow][pCol++]; 
           }
+          pCol++;
+        }
+        pRow++; 
+      }
+      pRow = pCol = 0;
+      for(i=currentY+1;i<(currentY+1+size) && i<height;i++) {
+        pCol = 0;
+        for(j=currentX;j<(currentX+size);j++) {
+          if(currentPiece[pRow][pCol]) {
+              auxboard[i][j] = currentPiece[pRow][pCol]; 
+          }
+          pCol++;
         }
         pRow++; 
       }
@@ -200,7 +209,9 @@ $(document).ready(function() {
         console.log("board after generate piece: "+board);
       }
       else {
-        moveDown();
+        if(!moveDown()) {
+          currentIndex = -1;    
+        }
       } 
       renderBoard();
     }
