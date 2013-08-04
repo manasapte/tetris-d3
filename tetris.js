@@ -159,17 +159,31 @@ $(document).ready(function() {
           pRow = 0,
           pCol = 0;
       size = sizes[currentIndex];
-      for(k=currentX;k<currentX+size;k++) {
-        board[currentY][k] = 0;
+      if(currentY+1 == height) {
+        console.log("collission due to height");
+        return false;
       }
-      for(i=currentY+1;i<(currentY+1+size);i++) {
+      auxboard = board.slice();
+      for(i=currentY;i<(currentY+size) && i<height;i++) {
+        for(j=currentX;j<(currentX+size) && j<width;j++) {
+          auxboard[i][j] = 0;
+        }
+      }
+      for(i=currentY+1;i<(currentY+1+size) && i<height;i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
-          board[i][j] = currentPiece[pRow][pCol++];         
+          if(auxboard[i][j] && currentPiece[pRow][pCol]) {
+            console.log("collision by distraction");return false;
+          }       
+          else {
+            auxboard[i][j] = currentPiece[pRow][pCol++]; 
+          }
         }
         pRow++; 
       }
+      board = auxboard;
       currentY++;
+      return true;
     }
 
     var tick = function() {
@@ -205,10 +219,6 @@ $(document).ready(function() {
         }
         if (e.keyCode == 40) { 
           moveDown();
-        }
-        if (e.keyCode == 32) { 
-           alert( "space pressed" );
-           return false;
         }
 
     });
