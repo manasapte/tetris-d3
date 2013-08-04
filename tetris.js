@@ -3,6 +3,7 @@ $(document).ready(function() {
     console.log("in tetris");
     var board = [],
         clock,
+        score = 0,
         width = 10,
         height = 22,
         currentPiece,
@@ -118,6 +119,12 @@ $(document).ready(function() {
     var initRender = function() {
       var row,
           cells;
+      d3.select('body').selectAll('div.score')
+                       .data(score)
+                       .enter()
+                       .append('div')
+                         .attr('class','score')
+                         .text(function(d) { return "Score: "+d; });
       row = d3.select('svg').selectAll('g')
                 .data(board)
               .enter()
@@ -133,9 +140,39 @@ $(document).ready(function() {
                    .attr('style','fill:DAF0ED')
           
     }
+    
+    var updateScore = d3.scale.linear()
+                              .domain([1,4])
+                              .range([100,400]);
+    var clearLines = function() {
+      var newboard;
+      newboard = board.filter(function(test){return test.reduce(function(a,b){return a+b}) != width;})
+      if(newboard.length < board.length) {
+        d3.range(board.length - newboard.length).map(function(){
+          newboard.unshift(d3.range(width).map(function(){return 0;}));
+        });
+        updateScore(board.length - newboard.length);
+        board = newboard
+        d3.select('svg')
+          .selectAll('g')
+            .data(board)
+          .selectAll('rect')
+               .data(function(d,i){return d;})
+               .transition()
+                 .delay(200)
+                 .duration(500)
+               .attr('x',function(d,i){return i*22;})
+               .attr('width',20)
+               .attr('height',20)
+               .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
+
+      }
+      d3.select('body').select('.score')
+                       .data(score)
+                       .text(function(d) { return "Score: "+d; });
+    }
 
     var renderBoard = function() {
-      var newboard;
       d3.select('svg')
           .selectAll('g')
             .data(board)
@@ -145,23 +182,7 @@ $(document).ready(function() {
                .attr('width',20)
                .attr('height',20)
                .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
-      newboard = board.filter(function(test){return test.reduce(function(a,b){return a+b}) != width;})
-      if(newboard.length < board.length) {
-        d3.range(board.length - newboard.length).map(function(){
-          newboard.unshift(d3.range(width).map(function(){return 0;}))
-        });
-        board = newboard
-        d3.select('svg')
-          .selectAll('g')
-            .data(board)
-          .selectAll('rect')
-               .data(function(d,i){return d;}).transition()
-               .attr('x',function(d,i){return i*22;})
-               .attr('width',20)
-               .attr('height',20)
-               .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
-
-      }
+      
  
     }
 
@@ -374,7 +395,9 @@ $(document).ready(function() {
       }
       else {
         if(!moveDown()) {
+          clearLines();
           currentIndex = -1;    
+          return;
         }
       } 
       renderBoard();
@@ -400,6 +423,7 @@ $(document).ready(function() {
           renderBoard();
         }
         if (e.keyCode == 40) { 
+          e.preventDefault();
           moveDown();
           renderBoard();
         }
