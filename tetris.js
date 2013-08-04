@@ -86,6 +86,11 @@ $(document).ready(function() {
             console.log("rotate sensing collision");
             return false;
           }
+          if( (newpiece[pRow][pCol] && j<0) || (newpiece[pRow][pCol] && j>=width)  ) {
+            console.log("rotate sensing collision");
+            return false;
+          }
+
           pCol++;
         }
         pRow++; 
@@ -185,7 +190,7 @@ $(document).ready(function() {
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
         for(j=currentX-1;j<(currentX-1+size);j++) {
-          if(j<0) {
+          if(currentPiece[pRow][pCol] && j<0 ) {
             console.log("border collision");
             return false;
           }
@@ -243,7 +248,7 @@ $(document).ready(function() {
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
         for(j=currentX+1;j<(currentX+1+size);j++) {
-          if(j>=width) {
+          if(currentPiece[pRow][pCol] && j>=width) {
             console.log("border collision");
             return false;
           }
