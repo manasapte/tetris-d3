@@ -155,23 +155,28 @@ $(document).ready(function() {
         pRow++; 
       }
       pRow = pCol = 0;
-      for(k=currentY;k<(currentY+size);k++) {
-        if(currentPiece[pRow][size-1]) {
-          board[k][(currentX+size-1)] = 0
-        }
-        pRow++;
-      }
-      pRow = pCol = 0;
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
-        for(j=currentX-1;j<(currentX-1+size);j++) {
+        for(j=currentX;j<(currentX+size);j++) {
           if(currentPiece[pRow][pCol]) {
-            board[i][j] = currentPiece[pRow][pCol];         
+            board[i][j] = 0; 
           }
           pCol++;
         }
         pRow++; 
       }
+      pRow = pCol = 0;
+      for(i=currentY;i<(currentY+size);i++) {
+        pCol = 0;
+        for(j=currentX;j<(currentX+size);j++) {
+          if(currentPiece[pRow][pCol]) {
+            board[i][j-1] = currentPiece[pRow][pCol];         
+          }
+          pCol++;
+        }
+        pRow++; 
+      }
+
       currentX--;
     }
 
@@ -208,23 +213,28 @@ $(document).ready(function() {
         pRow++; 
       }
       pRow = pCol = 0;
-      for(k=currentY;k<(currentY+size);k++) {
-        if(currentPiece[pRow][0]) {
-          board[k][currentX] = 0
-        }
-        pRow++;
-      }
-      pRow = pCol = 0;
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
-        for(j=currentX+1;j<(currentX+1+size);j++) {
+        for(j=currentX;j<(currentX+size);j++) {
           if(currentPiece[pRow][pCol]) {
-            board[i][j] = currentPiece[pRow][pCol];         
+            board[i][j] = 0;
           }
           pCol++;
         }
         pRow++; 
       }
+      pRow = pCol = 0;
+      for(i=currentY;i<(currentY+size);i++) {
+        pCol = 0;
+        for(j=currentX;j<(currentX+size);j++) {
+          if(currentPiece[pRow][pCol]) {
+            board[i][j+1] = currentPiece[pRow][pCol];
+          }
+          pCol++;
+        }
+        pRow++; 
+      }
+
       currentX++;
     }
 
