@@ -54,13 +54,56 @@ $(document).ready(function() {
       initRender();
     }
 
-    var rotate = function(piece) {
-      newpiece = piece.slice();
-      for(i=0;i<piece.length;i++) {
-        for(j=0;j<piece.length;j++) {
-          newpiece[j][(piece.length-1)-i] = piece[i][j];
+    var rotate = function() {
+      var newpiece,
+          size,
+          auxboard,
+          pRow=0,
+          pCol=0;
+      size = sizes[currentIndex];
+      newpiece = currentPiece.map(function(test){ return test.slice(); });
+      for(i=0;i<size;i++) {
+        for(j=0;j<size;j++) {
+          newpiece[j][(size-1)-i] = currentPiece[i][j];
         } 
       }
+      auxboard = board.map(function(test){ return test.slice(); });
+      for(i=currentY;i<(currentY+size) && i<height;i++) {
+        pCol=0;
+        for(j=currentX;j<(currentX+size) && j<width;j++) {
+          if(currentPiece[pRow][pCol]) {
+            auxboard[i][j] = 0;
+          }
+          pCol++;
+        }
+        pRow++;
+      }
+      pRow = pCol = 0;
+      for(i=currentY;i<currentY+size;i++) {
+        pCol = 0;
+        for(j=currentX;j<currentX+size;j++) {
+          if(auxboard[i][j] && newpiece[pRow][pCol]) {
+            console.log("rotate sensing collision");
+            return false;
+          }
+          pCol++;
+        }
+        pRow++; 
+      }
+      pRow = pCol = 0;
+      for(i=currentY;i<currentY+size;i++) {
+        pCol = 0;
+        for(j=currentX;j<currentX+size;j++) {
+          if(newpiece[pRow][pCol]) {
+            auxboard[i][j] = newpiece[pRow][pCol];
+          }
+          pCol++;
+        }
+        pRow++; 
+      }
+      board = auxboard;
+      currentPiece = newpiece;
+
     }
       
     var start = function() {
@@ -321,19 +364,20 @@ $(document).ready(function() {
 
     $(document).keydown(function(e){
         if (e.keyCode == 37) { 
-           moveLeft();
-           renderBoard();
+          moveLeft();
+          renderBoard();
         }
         if (e.keyCode == 38) { 
-           alert( "up pressed" );
-           return false;
+          rotate()
+          renderBoard();
         }
         if (e.keyCode == 39) { 
-           moveRight();
-           renderBoard();
+          moveRight();
+          renderBoard();
         }
         if (e.keyCode == 40) { 
           moveDown();
+          renderBoard();
         }
 
     });
