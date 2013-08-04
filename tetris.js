@@ -2,6 +2,7 @@ $(document).ready(function() {
   function tetris() {
     console.log("in tetris");
     var board = [],
+        clock,
         width = 10,
         height = 22,
         currentPiece,
@@ -63,7 +64,7 @@ $(document).ready(function() {
     }
       
     var start = function() {
-        setInterval(tick,1000)
+        clock = setInterval(tick,1000)
     }
  
     var initRender = function() {
@@ -110,11 +111,15 @@ $(document).ready(function() {
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
-          board[i][j] = currentPiece[pRow][pCol++];
-
+          if(currentPiece[pRow][pCol] && board[i][j]) {
+            return false;
+          }  
+          board[i][j] = currentPiece[pRow][pCol];
+          pCol++;
         } 
         pRow++;
       }
+      return true;
     }
     
     var moveLeft = function() {
@@ -213,10 +218,17 @@ $(document).ready(function() {
       return true;
     }
 
+    var gameOver = function() {
+      console.log("game over!");
+      clearInterval(clock);
+    }
+
     var tick = function() {
       console.log("in tick and current index: "+currentIndex);
       if(currentIndex == -1) {
-        generatePiece(); 
+        if(!generatePiece()) {
+          gameOver();
+        } 
         console.log("board after generate piece: "+board);
       }
       else {
