@@ -192,6 +192,9 @@ $(document).ready(function() {
       var size,
           pRow=0,
           pCol=0;
+      if( board[0].reduce(function(a,b){return a+b;}) > 0 ) {
+        return false;
+      }
       currentIndex = Math.floor(Math.random()*pieces.length)   
       currentY = 0;
       currentPiece = pieces[currentIndex]; 
@@ -202,8 +205,10 @@ $(document).ready(function() {
         for(j=currentX;j<(currentX+size);j++) {
           if((currentPiece[pRow][pCol] && board[i][j])) {
             return false;
-          }  
-          board[i][j] = currentPiece[pRow][pCol];
+          }
+          if(currentPiece[pRow][pCol]) {  
+            board[i][j] = currentPiece[pRow][pCol];
+          }
           pCol++;
         } 
         pRow++;
