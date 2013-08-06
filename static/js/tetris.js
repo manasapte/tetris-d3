@@ -3,6 +3,7 @@ $(document).ready(function() {
     console.log("in tetris");
     var board = [],
         clock,
+        theend = false,
         interval = 700,
         score = [0],
         width = 10,
@@ -386,10 +387,24 @@ $(document).ready(function() {
       currentY++;
       return true;
     }
+    
+    var pausePlay = function() {
+      if(theend) { 
+        return;
+      }
+      if(clock) {
+        clock = clearInterval(clock);
+      }
+      else {
+        clock = setInterval(tick,interval);
+        tick();
+      }
+    }
 
     var gameOver = function() {
       //console.log("game over!");
-      clearInterval(clock);
+      clock = clearInterval(clock);
+      theend = true;
     }
 
     var tick = function() {
@@ -416,6 +431,12 @@ $(document).ready(function() {
     //Key handlers:
 
     $(document).keydown(function(e){
+        if (e.keyCode == 32) { 
+          e.preventDefault();
+          console.log("space");
+          pausePlay();
+        }
+
         if (e.keyCode == 37) { 
           moveLeft();
           renderBoard();
