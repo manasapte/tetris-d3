@@ -200,7 +200,7 @@ $(document).ready(function() {
       for(i=currentY;i<(currentY+size);i++) {
         pCol = 0;
         for(j=currentX;j<(currentX+size);j++) {
-          if((currentPiece[pRow][pCol] && board[i][j]) || (board[0].reduce(function(a,b){return a+b;}) > 0) ) {
+          if((currentPiece[pRow][pCol] && board[i][j])) {
             return false;
           }  
           board[i][j] = currentPiece[pRow][pCol];
