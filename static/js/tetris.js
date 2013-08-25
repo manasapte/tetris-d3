@@ -14,29 +14,39 @@ $(document).ready(function() {
         currentY = 0,
         motionStarted = 0;
         sizes = [4,2,3,3,3,3,3],
+        colorDict = {
+          0 : 'DAF0ED',
+          1 : 'FFA500',
+          2 : '0000CD',
+          3 : '008080',
+          4 : 'FFFF00',
+          5 : '008000',
+          6 : '800080',
+          7 : 'FF0000'
+        }
         pieces = [
-          [  [1, 1, 1, 1],
+          [  [3, 3, 3, 3],
              [0, 0, 0, 0],
              [0, 0, 0, 0],
              [0, 0, 0, 0]
           ],
-          [  [1, 1],
-             [1, 1]
+          [  [4, 4],
+             [4, 4]
           ],
-          [  [0, 1, 0],
-             [1, 1, 1],
+          [  [0, 6, 0],
+             [6, 6, 6],
              [0, 0, 0]
           ],
-          [  [0, 1, 1],
-             [1, 1, 0],
+          [  [0, 5, 5],
+             [5, 5, 0],
              [0, 0, 0]
           ],
-          [  [1, 1, 0],
-             [0, 1, 1],
+          [  [7, 7, 0],
+             [0, 7, 7],
              [0, 0, 0]
           ],
-          [  [1, 0, 0],
-             [1, 1, 1],
+          [  [2, 0, 0],
+             [2, 2, 2],
              [0, 0, 0]
           ],
           [  [0, 0, 1],
@@ -135,7 +145,7 @@ $(document).ready(function() {
                    .attr('x',function(d,i){return i*22;})
                    .attr('width',20)
                    .attr('height',20)
-                   .attr('style','fill:DAF0ED')
+                   .attr('style','fill:'+colorDict[0])
           
     }
     
@@ -144,7 +154,7 @@ $(document).ready(function() {
                               .range([100,400]);
     var clearLines = function() {
       var newboard;
-      newboard = board.filter(function(test){return test.reduce(function(a,b){return a+b}) != width;})
+      newboard = board.filter(function(test){return test.map(function(d){ return d>0 ? 1 : 0;}).reduce(function(a,b){return a+b}) != width;})
       if(newboard.length < board.length) {
         score.push(score.shift() + updateScore(board.length - newboard.length));
         d3.range(board.length - newboard.length).map(function(){
@@ -162,7 +172,7 @@ $(document).ready(function() {
                .attr('x',function(d,i){return i*22;})
                .attr('width',20)
                .attr('height',20)
-               .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
+               .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
 
       }
       d3.select('body').select('div.panel').selectAll('div.score')
@@ -179,7 +189,7 @@ $(document).ready(function() {
                .attr('x',function(d,i){return i*22;})
                .attr('width',20)
                .attr('height',20)
-               .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
+               .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
     }
 
     
@@ -415,7 +425,7 @@ $(document).ready(function() {
           return;
         }
       } 
-      renderBoard();
+      renderBoard(board);
     }
     
     board = makeBoard(width,height);
