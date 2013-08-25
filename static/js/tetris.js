@@ -45,16 +45,12 @@ $(document).ready(function() {
           ]
         ];
        
-    var initBoard = function() {
-      var row;
-      for(i=0;i<height;i++) {
-        row = [];
-        for(j=0;j<width;j++) {
-          row.push(0) 
-        }
-        board.push(row)
-      }
-      initRender();
+    var makeBoard = function(width,height) {
+      return d3.range(height).map(function() {
+        return d3.range(width).map(function() {
+          return 0;
+        });
+      });
     }
 
     var rotate = function() {
@@ -114,11 +110,11 @@ $(document).ready(function() {
 
     }
       
-    var start = function() {
+    var start = function(tick,interval) {
         clock = setInterval(tick,interval)
     }
  
-    var initRender = function() {
+    var initRender = function(board) {
       var row,
           cells;
       d3.select('body').select('div.panel').selectAll('div.score')
@@ -174,7 +170,7 @@ $(document).ready(function() {
                        .text(function(d) { return "Score: "+d; });
     }
 
-    var renderBoard = function() {
+    var renderBoard = function(board) {
       d3.select('svg')
           .selectAll('g')
             .data(board)
@@ -184,8 +180,6 @@ $(document).ready(function() {
                .attr('width',20)
                .attr('height',20)
                .attr('style',function(d,i){ return d==0 ? 'fill:DAF0ED' : 'fill:152EE8'; } );
-      
- 
     }
 
     
@@ -424,10 +418,11 @@ $(document).ready(function() {
       renderBoard();
     }
     
-    initBoard();
+    board = makeBoard(width,height);
+    initRender(board);
     //console.log("board after init board: "+board);
-    renderBoard();
-    start();
+    renderBoard(board);
+    start(tick,interval);
     //Key handlers:
 
     $(document).keydown(function(e){
@@ -439,20 +434,20 @@ $(document).ready(function() {
 
         if (e.keyCode == 37) { 
           moveLeft();
-          renderBoard();
+          renderBoard(board);
         }
         if (e.keyCode == 38) { 
-          rotate()
-          renderBoard();
+          rotate();
+          renderBoard(board);
         }
         if (e.keyCode == 39) { 
           moveRight();
-          renderBoard();
+          renderBoard(board);
         }
         if (e.keyCode == 40) { 
           e.preventDefault();
           moveDown();
-          renderBoard();
+          renderBoard(board);
         }
 
     });
