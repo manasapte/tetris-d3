@@ -99,15 +99,6 @@ $(document).ready(function() {
             console.log("rotate sensing collision");
             return false;
           }
-
-          pCol++;
-        }
-        pRow++; 
-      }
-      pRow = pCol = 0;
-      for(i=currentY;i<currentY+size;i++) {
-        pCol = 0;
-        for(j=currentX;j<currentX+size;j++) {
           if(newpiece[pRow][pCol]) {
             auxboard[i][j] = newpiece[pRow][pCol];
           }
@@ -115,9 +106,8 @@ $(document).ready(function() {
         }
         pRow++; 
       }
-      board = auxboard;
       currentPiece = newpiece;
-
+      return auxboard;
     }
       
     var start = function(tick,interval) {
@@ -221,177 +211,88 @@ $(document).ready(function() {
       return true;
     }
     
-    var moveLeft = function() {
+    var move = function(direction) {
       var size,
           pRow = 0,
-          pCol = 0; 
+          pCol = 0,
+          collision = false; 
       size = sizes[currentIndex];
       auxboard = board.map(function(test){ return test.slice(); });
-      for(i=currentY;i<(currentY+size) && i<height;i++) {
-        pCol=0;
-        for(j=currentX;j<(currentX+size) && j<width;j++) {
+      d3.range(size).map(function(pRow){
+        i = pRow + currentY;
+        d3.range(size).map(function(pCol){
+          j = pCol + currentX;
           if(currentPiece[pRow][pCol]) {
             auxboard[i][j] = 0;
           }
-          pCol++;
-        }
-        pRow++;
-      }
-      pRow = pCol = 0;
-      for(i=currentY;i<(currentY+size);i++) {
-        pCol = 0;
-        for(j=currentX-1;j<(currentX-1+size);j++) {
-          if(currentPiece[pRow][pCol] && j<0 ) {
-            console.log("border collision");
-            return false;
-          }
-          if(currentPiece[pRow][pCol] && auxboard[i][j]) {
-            console.log("piece collision");
-            return false;
-          }
-          pCol++;
-        }
-        pRow++; 
-      }
-      pRow = pCol = 0;
-      for(i=currentY;i<(currentY+size);i++) {
-        pCol = 0;
-        for(j=currentX;j<(currentX+size);j++) {
-          if(currentPiece[pRow][pCol]) {
-            board[i][j] = 0; 
-          }
-          pCol++;
-        }
-        pRow++; 
-      }
-      pRow = pCol = 0;
-      for(i=currentY;i<(currentY+size);i++) {
-        pCol = 0;
-        for(j=currentX;j<(currentX+size);j++) {
-          if(currentPiece[pRow][pCol]) {
-            board[i][j-1] = currentPiece[pRow][pCol];         
-          }
-          pCol++;
-        }
-        pRow++; 
-      }
-
-      currentX--;
-    }
-
-    var moveRight = function() {
-      var size,
-          pRow = 0,
-          pCol = 0; 
-      size = sizes[currentIndex];
-      auxboard = board.map(function(test){ return test.slice(); });
-      for(i=currentY;i<(currentY+size) && i<height;i++) {
-        pCol=0;
-        for(j=currentX;j<(currentX+size) && j<width;j++) {
-          if(currentPiece[pRow][pCol]) {
-            auxboard[i][j] = 0;
-          }
-          pCol++;
-        }
-        pRow++;
-      }
-      pRow = pCol = 0;
-      for(i=currentY;i<(currentY+size);i++) {
-        pCol = 0;
-        for(j=currentX+1;j<(currentX+1+size);j++) {
-          if(currentPiece[pRow][pCol] && j>=width) {
-            console.log("border collision");
-            return false;
-          }
-          if(currentPiece[pRow][pCol] && auxboard[i][j]) {
-            console.log("piece collision");
-            return false;
-          }
-          pCol++;
-        }
-        pRow++; 
-      }
-      pRow = pCol = 0;
-      for(i=currentY;i<(currentY+size);i++) {
-        pCol = 0;
-        for(j=currentX;j<(currentX+size);j++) {
-          if(currentPiece[pRow][pCol]) {
-            board[i][j] = 0;
-          }
-          pCol++;
-        }
-        pRow++; 
-      }
-      pRow = pCol = 0;
-      for(i=currentY;i<(currentY+size);i++) {
-        pCol = 0;
-        for(j=currentX;j<(currentX+size);j++) {
-          if(currentPiece[pRow][pCol]) {
-            board[i][j+1] = currentPiece[pRow][pCol];
-          }
-          pCol++;
-        }
-        pRow++; 
-      }
-
-      currentX++;
-    }
-
+        });
+      });
  
-    var moveDown = function() {
-      var size,
-          pRow = 0,
-          pCol = 0;
-      size = sizes[currentIndex];
-      auxboard = board.map(function(test){ return test.slice(); });
-      for(i=currentY;i<(currentY+size) && i<height;i++) {
-        pCol=0;
-        for(j=currentX;j<(currentX+size) && j<width;j++) {
+      d3.range(size).map(function(pRow){
+        i = pRow + currentY;
+        d3.range(size).map(function(pCol){
+          j = pCol + currentX;
           if(currentPiece[pRow][pCol]) {
-            auxboard[i][j] = 0;
+            if(direction == 'left') {
+              if((j-1)<0 ) {
+                //border collision
+                collision = true;
+                return;
+              }
+              if(auxboard[i][j-1]) {
+                //piece collision
+                collision = true;
+                return;
+              }
+              auxboard[i][j-1] = currentPiece[pRow][pCol];         
+            }
+            if(direction == 'right') {
+              console.log("trying to move right now");
+              if((j+1)>=width ) {
+                //border collision
+                collision = true;
+                return;
+              }
+              if(auxboard[i][j+1]) {
+                //piece collision
+                collision = true;
+                return;
+              }
+              auxboard[i][j+1] = currentPiece[pRow][pCol];         
+            }
+            if(direction == 'down') {
+              console.log("trying to move down now");
+              if((i+1)>=height ) {
+                //border collision
+                collision = true;
+                return;
+              }
+              if(auxboard[i+1][j]) {
+                //piece collision
+                collision = true;
+                return;
+              }
+              auxboard[i+1][j] = currentPiece[pRow][pCol];         
+            }
           }
-          pCol++;
+        });
+      });
+      if(!collision) {
+        if(direction == 'left') {
+          currentX--;
         }
-        pRow++;
-      }
-      pRow = pCol = 0;
-      for(i=currentY+1;i<(currentY+1+size) && i<height+size;i++) {
-        pCol = 0;
-        for(j=currentX;j<(currentX+size);j++) {
-          if(currentPiece[pRow][pCol] && i > (height-1)) {
-            return false;
-          }
-          pCol++;
+        if(direction == 'right') {
+          currentX++;
         }
-        pRow++;
-      }
-      pRow = pCol = 0;
-      for(i=currentY+1;i<(currentY+1+size) && i<height;i++) {
-        pCol = 0;
-        for(j=currentX;j<(currentX+size);j++) {
-          if(auxboard[i][j] && currentPiece[pRow][pCol]) {
-            return false;
-          }
-          pCol++;
+        if(direction == 'down') {
+          console.log('incrementing current y and auxboard: '+ auxboard);
+          currentY++;
         }
-        pRow++; 
+        return auxboard;
       }
-      pRow = pCol = 0;
-      for(i=currentY+1;i<(currentY+1+size) && i<height;i++) {
-        pCol = 0;
-        for(j=currentX;j<(currentX+size);j++) {
-          if(currentPiece[pRow][pCol]) {
-              auxboard[i][j] = currentPiece[pRow][pCol]; 
-          }
-          pCol++;
-        }
-        pRow++; 
-      }
-      board = auxboard;
-      currentY++;
-      return true;
+      return false;
     }
-    
+
     var pausePlay = function() {
       if(theend) { 
         return;
@@ -413,17 +314,20 @@ $(document).ready(function() {
 
     var tick = function() {
       //console.log("in tick and current index: "+currentIndex);
+      var test = false;
       if(currentIndex == -1) {
         if(!generatePiece()) {
           gameOver();
         } 
       }
       else {
-        if(!moveDown()) {
+        test=move('down');
+        if(!test) {
           clearLines();
           currentIndex = -1;    
           return;
         }
+        board = test;
       } 
       renderBoard(board);
     }
@@ -436,30 +340,29 @@ $(document).ready(function() {
     //Key handlers:
 
     $(document).keydown(function(e){
+        var test;
         if (e.keyCode == 32) { 
           e.preventDefault();
           console.log("space");
           pausePlay();
         }
-
         if (e.keyCode == 37) { 
-          moveLeft();
-          renderBoard(board);
+          test =  move('left');
         }
         if (e.keyCode == 38) { 
-          rotate();
-          renderBoard(board);
+          test = rotate();
         }
         if (e.keyCode == 39) { 
-          moveRight();
-          renderBoard(board);
+          test = move('right')
         }
         if (e.keyCode == 40) { 
           e.preventDefault();
-          moveDown();
+          test = move('down');
+        }
+        if(test) {
+          board = test;
           renderBoard(board);
         }
-
     });
 
   }
