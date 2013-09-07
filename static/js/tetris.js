@@ -1,20 +1,18 @@
-$(document).ready(function() {
-  function tetris() {
-    console.log("in tetris");
-    var board = [],
-        clock,
-        theend = false,
-        interval = 700,
-        score = [0],
-        width = 10,
-        height = 22,
-        currentPiece,
-        currentIndex = -1,
-        currentX = 0,
-        currentY = 0,
-        motionStarted = 0;
-        sizes = [4,2,3,3,3,3,3],
-        colorDict = {
+var tetris = {
+        board : [],
+        clock : undefined,
+        theend : false,
+        interval : 700,
+        score : [0],
+        width : 10,
+        height : 22,
+        currentPiece : undefined,
+        currentIndex : -1,
+        currentX : 0,
+        currentY : 0,
+        motionStarted : 0,
+        sizes : [4,2,3,3,3,3,3],
+        colorDict : {
           0 : 'DAF0ED',
           1 : 'FFA500',
           2 : '0000CD',
@@ -23,8 +21,8 @@ $(document).ready(function() {
           5 : '008000',
           6 : '800080',
           7 : 'FF0000'
-        }
-        pieces = [
+        },
+        pieces : [
           [  [3, 3, 3, 3],
              [0, 0, 0, 0],
              [0, 0, 0, 0],
@@ -53,17 +51,17 @@ $(document).ready(function() {
              [1, 1, 1],
              [0, 0, 0]
           ]
-        ];
+        ],
        
-    var makeBoard = function(width,height) {
+    makeBoard : function(width,height) {
       return d3.range(height).map(function() {
         return d3.range(width).map(function() {
           return 0;
         });
       });
-    }
+    },
 
-    var rotate = function() {
+    rotate : function() {
       var newpiece,
           size,
           auxboard,
@@ -92,11 +90,9 @@ $(document).ready(function() {
         pCol = 0;
         for(j=currentX;j<currentX+size;j++) {
           if(auxboard[i][j] && newpiece[pRow][pCol]) {
-            console.log("rotate sensing collision");
             return false;
           }
           if( (newpiece[pRow][pCol] && j<0) || (newpiece[pRow][pCol] && j>=width)  ) {
-            console.log("rotate sensing collision");
             return false;
           }
           if(newpiece[pRow][pCol]) {
@@ -108,17 +104,17 @@ $(document).ready(function() {
       }
       currentPiece = newpiece;
       return auxboard;
-    }
+    },
       
-    var start = function(tick,interval) {
+    start : function(tick,interval) {
         clock = setInterval(tick,interval)
-    }
+    },
  
-    var initRender = function(board) {
+    initRender : function(board) {
       var row,
           cells;
       d3.select('body').select('div.panel').selectAll('div.score')
-                       .data(score)
+                       .data(tetris.score)
                        .enter()
                        .append('div')
                          .attr('class','score')
@@ -135,14 +131,14 @@ $(document).ready(function() {
                    .attr('x',function(d,i){return i*22;})
                    .attr('width',20)
                    .attr('height',20)
-                   .attr('style','fill:'+colorDict[0])
+                   .attr('style','fill:'+tetris.colorDict[0])
           
-    }
+    },
     
-    var updateScore = d3.scale.linear()
+    updateScore : d3.scale.linear()
                               .domain([1,4])
-                              .range([100,400]);
-    var clearLines = function() {
+                              .range([100,400]),
+    clearLines : function() {
       var newboard;
       newboard = board.filter(function(test){return test.map(function(d){ return d>0 ? 1 : 0;}).reduce(function(a,b){return a+b}) != width;})
       if(newboard.length < board.length) {
@@ -162,15 +158,15 @@ $(document).ready(function() {
                .attr('x',function(d,i){return i*22;})
                .attr('width',20)
                .attr('height',20)
-               .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
+               .attr('style',function(d,i){ return 'fill:'+tetris.colorDict[d]; } );
 
       }
       d3.select('body').select('div.panel').selectAll('div.score')
                        .data(score)
                        .text(function(d) { return "Score: "+d; });
-    }
+    },
 
-    var renderBoard = function(board) {
+    renderBoard : function(board) {
       d3.select('svg')
           .selectAll('g')
             .data(board)
@@ -179,18 +175,18 @@ $(document).ready(function() {
                .attr('x',function(d,i){return i*22;})
                .attr('width',20)
                .attr('height',20)
-               .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
-    }
+               .attr('style',function(d,i){ return 'fill:'+tetris.colorDict[d]; } );
+    },
 
     
-    var generatePiece = function() {
+    generatePiece : function() {
       var size,
           pRow=0,
           pCol=0;
       if( board[0].reduce(function(a,b){return a+b;}) > 0 ) {
         return false;
       }
-      currentIndex = Math.floor(Math.random()*pieces.length)   
+      tetris.currentIndex = Math.floor(Math.random()*tetris.pieces.length)   
       currentY = 0;
       currentPiece = pieces[currentIndex]; 
       size = sizes[currentIndex];
@@ -209,9 +205,9 @@ $(document).ready(function() {
         pRow++;
       }
       return true;
-    }
+    },
     
-    var move = function(direction) {
+    move : function(direction) {
       var size,
           pRow = 0,
           pCol = 0,
@@ -247,7 +243,6 @@ $(document).ready(function() {
               auxboard[i][j-1] = currentPiece[pRow][pCol];         
             }
             if(direction == 'right') {
-              console.log("trying to move right now");
               if((j+1)>=width ) {
                 //border collision
                 collision = true;
@@ -261,7 +256,6 @@ $(document).ready(function() {
               auxboard[i][j+1] = currentPiece[pRow][pCol];         
             }
             if(direction == 'down') {
-              console.log("trying to move down now");
               if((i+1)>=height ) {
                 //border collision
                 collision = true;
@@ -285,15 +279,14 @@ $(document).ready(function() {
           currentX++;
         }
         if(direction == 'down') {
-          console.log('incrementing current y and auxboard: '+ auxboard);
           currentY++;
         }
         return auxboard;
       }
       return false;
-    }
+    },
 
-    var pausePlay = function() {
+    pausePlay : function() {
       if(theend) { 
         return;
       }
@@ -304,71 +297,63 @@ $(document).ready(function() {
         clock = setInterval(tick,interval);
         tick();
       }
-    }
+    },
 
-    var gameOver = function() {
-      //console.log("game over!");
+    gameOver : function() {
       clock = clearInterval(clock);
       theend = true;
-    }
+    },
 
-    var tick = function() {
-      //console.log("in tick and current index: "+currentIndex);
+    tick : function() {
       var test = false;
-      if(currentIndex == -1) {
-        if(!generatePiece()) {
-          gameOver();
+      if(tetris.currentIndex == -1) {
+        if(!tetris.generatePiece()) {
+          tetris.gameOver();
         } 
       }
       else {
-        test=move('down');
+        test=tetris.move('down');
         if(!test) {
-          clearLines();
-          currentIndex = -1;    
+          tetris.clearLines();
+          tetris.currentIndex = -1;    
           return;
         }
         board = test;
       } 
-      renderBoard(board);
+      tetris.renderBoard(board);
     }
-    
-    board = makeBoard(width,height);
-    initRender(board);
-    //console.log("board after init board: "+board);
-    renderBoard(board);
-    start(tick,interval);
-    //Key handlers:
+}
 
+$(document).ready(function() {
+    
+    board = tetris.makeBoard(tetris.width,tetris.height);
+    tetris.initRender(board);
+    tetris.renderBoard(board);
+    tetris.start(tetris.tick,tetris.interval);
+    //Key handlers:
     $(document).keydown(function(e){
         var test;
         if (e.keyCode == 32) { 
           e.preventDefault();
-          console.log("space");
-          pausePlay();
+          tetris.pausePlay();
         }
         if (e.keyCode == 37) { 
-          test =  move('left');
+          test =  tetris.move('left');
         }
         if (e.keyCode == 38) { 
-          test = rotate();
+          test = tetris.rotate();
         }
         if (e.keyCode == 39) { 
-          test = move('right')
+          test = tetris.move('right')
         }
         if (e.keyCode == 40) { 
           e.preventDefault();
-          test = move('down');
+          test = tetris.move('down');
         }
         if(test) {
           board = test;
-          renderBoard(board);
+          tetris.renderBoard(board);
         }
     });
-
-  }
-  tetris(); 
-  
- 
-
 });
 
