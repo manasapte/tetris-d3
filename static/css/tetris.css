@@ -7,3 +7,9 @@ div.score {
   margin: 1px;
   color: white;
 }
+
+div.box {
+  display: inline-block;
+  vertical-align: top;
+  width: 250px;
+}
