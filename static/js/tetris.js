@@ -1,5 +1,6 @@
 function tetris(params) {
   var board = params.board || [],
+      boardId = params.boardId || 1,
       clock = params.clock || undefined,
       theend = params.theend || false,
       interval = params.interval || 700,
@@ -119,7 +120,7 @@ function tetris(params) {
                      .append('div')
                        .attr('class','score')
                        .text(function(d) { return "Score: "+d; });
-    row = d3.select('svg').selectAll('g')
+    row = d3.select('svg#tetris-board'+boardId).selectAll('g')
               .data(board)
             .enter()
             .append('g')
@@ -147,7 +148,7 @@ function tetris(params) {
         newboard.unshift(d3.range(width).map(function(){return 0;}));
       });
       board = newboard
-      d3.select('svg')
+      d3.select('svg#tetris-board'+boardId)
         .selectAll('g')
           .data(board)
         .selectAll('rect')
@@ -167,7 +168,7 @@ function tetris(params) {
   }
 
   var renderBoard = function(board) {
-    d3.select('svg')
+    d3.select('svg#tetris-board'+boardId)
         .selectAll('g')
           .data(board)
         .selectAll('rect')
