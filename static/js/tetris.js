@@ -114,7 +114,7 @@ function tetris(params) {
   var initRender = function(board) {
     var row,
         cells;
-    d3.select('body').select('div.panel').selectAll('div.score')
+    d3.select('body').select('div.tetris-panel').selectAll('div.score')
                      .data(score)
                      .enter()
                      .append('div')
@@ -162,7 +162,7 @@ function tetris(params) {
              .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
 
     }
-    d3.select('body').select('div.panel').selectAll('div.score')
+    d3.select('body').select('div.tetris-panel').selectAll('div.score')
                      .data(score)
                      .text(function(d) { return "Score: "+d; });
   }

@@ -8,5 +8,9 @@ app.config['DEBUG'] = True
 def index():
     return render_template('tetris.html') 
 
+@app.route('/test')
+def test():
+    return render_template('modalTest.html') 
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port=8000)
