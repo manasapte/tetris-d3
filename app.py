@@ -12,5 +12,10 @@ def index():
 def test():
     return render_template('modalTest.html') 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=8000)
+@app.route('/socket.io/<path:rest>')
+def push_stream(rest):
+    try:
+        socketio_manage(request.environ, {'/gamedata': GamesNamespace}, request)
+    except:
+        app.logger.error("Exception while handling socketio connection",
+                     exc_info=True)
