@@ -1,6 +1,6 @@
 from socketio import namespace.BaseNamespace
 
-class GamesNamespace(BaseNamespace):
+class PlayersNamespace(BaseNamespace):
     sockets = {}
     def recv_connect(self):
         print "Got a socket connection" # debug
@@ -9,7 +9,7 @@ class GamesNamespace(BaseNamespace):
         print "Got a socket disconnection" # debug
         if id(self) in self.sockets:
             del self.sockets[id(self)]
-        super(GamesNamespace, self).disconnect(*args, **kwargs)
+        super(PlayersNamespace, self).disconnect(*args, **kwargs)
     # broadcast to all sockets on this channel!
     @classmethod
     def broadcast(self, event, message):

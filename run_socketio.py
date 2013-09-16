@@ -7,4 +7,3 @@ monkey.patch_all()
 app.debug = True
 port = 8000 
 SocketIOServer(('', port), app, resource="socket.io").serve_forever()
-
