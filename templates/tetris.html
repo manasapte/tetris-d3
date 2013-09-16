@@ -7,6 +7,8 @@
   <script type="text/javascript" src="static/js/d3.v3.min.js"></script>
   <script type="text/javascript" src="static/js/jquery.min.js"></script>
   <script type="text/javascript" src="static/js/tetris.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap.js"></script>
+  <link href="static/css/bootstrap.css" rel="stylesheet"> 
   <link rel="stylesheet" type="text/css" href="static/css/tetris.css">
 </head>
 <body>
@@ -32,5 +34,37 @@ space: toggle pause/play
   <svg id="tetris-board2">
   </svg>
 </div>
+<!-- Modal -->
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" id="closemodal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Game Settings</h4>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <input type="text" class="form-control-sm" placeholder="Alias">
+            <div class="radio">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                Single Player
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                Multi Player
+              </label>
+            </div>
+            <button class="btn btn-sm btn-primary">Play!</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
 </body>
 </html>

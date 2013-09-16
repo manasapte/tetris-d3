@@ -356,9 +356,11 @@ function tetris(params) {
   });
 }
 
-
-
 $(document).ready(function() {
-    tetris({}); 
+    $('#closemodal').click(function(){
+      $('#myModal').modal('hide'); 
+    });
+    $('#myModal').modal(); 
+    //tetris({}); 
 });
 
