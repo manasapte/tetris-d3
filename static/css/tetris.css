@@ -7,3 +7,11 @@ div.score {
   margin: 1px;
   color: white;
 }
+
+label.error-hide {
+  display: none;
+}
+
+label.error-show {
+  display: block
+}

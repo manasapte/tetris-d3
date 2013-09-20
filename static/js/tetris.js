@@ -56,141 +56,28 @@ function Tetris(params) {
      
 }
 
-Tetris.prototype.makeBoard = function(width,height) {
-  return d3.range(height).map(function() {
-    return d3.range(width).map(function() {
-      return 0;
-    });
-  });
-}
-
-Tetris.prototype.rotate = function(currentPiece) {
-  var newpiece,
-      size,
-      auxboard,
-      pRow=0,
-      pCol=0;
-  size = currentPiece.length;
-  newpiece = currentPiece.map(function(test){ return test.slice(); });
-  for(i=0;i<size;i++) {
-    for(j=0;j<size;j++) {
-      newpiece[j][(size-1)-i] = currentPiece[i][j];
-    } 
-  }
-  auxboard = board.map(function(test){ return test.slice(); });
-  for(i=this.currentY;i<(this.currentY+size) && i<height;i++) {
-    pCol=0;
-    for(j=this.currentX;j<(this.currentX+size) && j<width;j++) {
-      if(currentPiece[pRow][pCol]) {
-        auxboard[i][j] = 0;
-      }
-      pCol++;
-    }
-    pRow++;
-  }
-  pRow = pCol = 0;
-  for(i=this.currentY;i<this.currentY+size;i++) {
-    pCol = 0;
-    for(j=this.currentX;j<this.currentX+size;j++) {
-      if(auxboard[i][j] && newpiece[pRow][pCol]) {
-        return false;
-      }
-      if( (newpiece[pRow][pCol] && j<0) || (newpiece[pRow][pCol] && j>=width)  ) {
-        return false;
-      }
-      if(newpiece[pRow][pCol]) {
-        auxboard[i][j] = newpiece[pRow][pCol];
-      }
-      pCol++;
-    }
-    pRow++; 
-  }
-  return {'board': auxboard,'piece': newpiece};
-}
-  
-Tetris.prototype.start = function(tick,interval) {
-    this.clock = setInterval(tick,interval)
-}
-
-Tetris.prototype.scoreRender = function() {
-  d3.select('body').select('div.tetris-panel').selectAll('div.score')
-                   .data(score)
-                   .enter()
-                   .append('div')
-                     .attr('class','score')
-                     .text(function(d) { return "Score: "+d; });
-}
-
-Tetris.prototype.updateScore = d3.scale.linear()
-                          .domain([1,4])
-                          .range([100,400]);
-Tetris.prototype.clearLines = function() {
-  var newboard;
-  newboard = board.filter(function(test){return test.map(function(d){ return d>0 ? 1 : 0;}).reduce(function(a,b){return a+b}) != width;})
-  if(newboard.length < board.length) {
-    score.push(score.shift() + updateScore(board.length - newboard.length));
-    d3.range(board.length - newboard.length).map(function(){
-      newboard.unshift(d3.range(width).map(function(){return 0;}));
-    });
-  }
-  d3.select('body').select('div.tetris-panel').selectAll('div.score')
-                   .data(score)
-                   .text(function(d) { return "Score: "+d; });
-  return newboard;
-}
-
-Tetris.prototype.renderBoard = function(board) {
-  d3.select('svg#tetris-board'+boardId)
-      .selectAll('g')
-        .data(board)
-      .selectAll('rect')
-           .data(function(d,i){return d;})
-           .attr('x',function(d,i){return i*22;})
-           .attr('width',20)
-           .attr('height',20)
-           .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
-}
-
-
-Tetris.prototype.generatePiece = function() {
-  var size,
-      pRow=0,
-      pCol=0;
-  if( this.board[0].reduce(function(a,b){return a+b;}) > 0 ) {
-    return false;
-  }
-  this.currentIndex = Math.floor(Math.random()*pieces.length)   
-  this.currentY = 0;
-  this.currentPiece = pieces[currentIndex]; 
-  size = currentPiece.length; 
-  this.currentX = Math.floor((width - size) / 2);
-  for(i=this.currentY;i<(this.currentY+size);i++) {
-    pCol = 0;
-    for(j=this.currentX;j<(this.currentX+size);j++) {
-      if((this.currentPiece[pRow][pCol] && this.board[i][j])) {
-        return false;
-      }
-      if(this.currentPiece[pRow][pCol]) {  
-        this.board[i][j] = this.currentPiece[pRow][pCol];
-      }
-      pCol++;
-    } 
-    pRow++;
-  }
-  return true;
-}
-
 Tetris.prototype.move = function(direction) {
   var size,
+      currentPiece,
+      auxboard,
+      height,
+      width,
+      currentX,
+      currentY,
       pRow = 0,
       pCol = 0,
       collision = false; 
   size = this.sizes[this.currentIndex];
   auxboard = this.board.map(function(test){ return test.slice(); });
+  currentPiece = this.currentPiece;
+  currentX = this.currentX;
+  currentY = this.currentY;
+  height = this.height;
+  width = this.width;
   d3.range(size).map(function(pRow){
-    i = pRow + this.currentY;
+    i = pRow + currentY;
     d3.range(size).map(function(pCol){
-      j = pCol + this.currentX;
+      j = pCol + currentX;
       if(currentPiece[pRow][pCol]) {
         auxboard[i][j] = 0;
       }
@@ -198,9 +85,9 @@ Tetris.prototype.move = function(direction) {
   });
 
   d3.range(size).map(function(pRow){
-    i = pRow + this.currentY;
+    i = pRow + currentY;
     d3.range(size).map(function(pCol){
-      j = pCol + this.currentX;
+      j = pCol + currentX;
       if(currentPiece[pRow][pCol]) {
         if(direction == 'left') {
           if((j-1)<0 ) {
@@ -257,7 +144,149 @@ Tetris.prototype.move = function(direction) {
     return auxboard;
   }
   return false;
-}
+};
+
+
+Tetris.prototype.makeBoard = function(width,height) {
+  return d3.range(height).map(function() {
+    return d3.range(width).map(function() {
+      return 0;
+    });
+  });
+};
+
+Tetris.prototype.rotate = function(currentPiece) {
+  var newpiece,
+      size,
+      auxboard,
+      pRow=0,
+      pCol=0;
+  size = currentPiece.length;
+  newpiece = currentPiece.map(function(test){ return test.slice(); });
+  for(i=0;i<size;i++) {
+    for(j=0;j<size;j++) {
+      newpiece[j][(size-1)-i] = currentPiece[i][j];
+    } 
+  }
+  auxboard = this.board.map(function(test){ return test.slice(); });
+  for(i=this.currentY;i<(this.currentY+size) && i<this.height;i++) {
+    pCol=0;
+    for(j=this.currentX;j<(this.currentX+size) && j<this.width;j++) {
+      if(currentPiece[pRow][pCol]) {
+        auxboard[i][j] = 0;
+      }
+      pCol++;
+    }
+    pRow++;
+  }
+  pRow = pCol = 0;
+  for(i=this.currentY;i<this.currentY+size;i++) {
+    pCol = 0;
+    for(j=this.currentX;j<this.currentX+size;j++) {
+      if(auxboard[i][j] && newpiece[pRow][pCol]) {
+        return false;
+      }
+      if( (newpiece[pRow][pCol] && j<0) || (newpiece[pRow][pCol] && j>=this.width)  ) {
+        return false;
+      }
+      if(newpiece[pRow][pCol]) {
+        auxboard[i][j] = newpiece[pRow][pCol];
+      }
+      pCol++;
+    }
+    pRow++; 
+  }
+  this.currentPiece = newpiece;
+  return auxboard;
+};
+  
+Tetris.prototype.initRender = function() {
+  d3.select('body').select('div#tetris-score'+this.boardId).selectAll('div.score')
+                   .data(this.score)
+                   .enter()
+                   .append('div')
+                     .attr('class','score')
+                     .text(function(d) { return "Score: "+d; });
+
+  row = d3.select('svg#tetris-board'+this.boardId).selectAll('g')
+                .data(this.board)
+              .enter()
+              .append('g')
+                .attr('transform',function(d,i){ return 'translate(0,'+i*22+')';})
+  cells = row.selectAll('rect')
+               .data(function(d,i){return d;})
+             .enter()
+             .append('rect')
+               .attr('x',function(d,i){return i*22;})
+               .attr('width',20)
+               .attr('height',20)
+               .attr('style','fill:DAF0ED')
+
+};
+
+Tetris.prototype.updateScore = d3.scale.linear()
+                          .domain([1,4])
+                          .range([100,400]);
+
+Tetris.prototype.clearLines = function() {
+  var newboard,
+      width;
+  width = this.width;
+  newboard = this.board.filter(function(test){return test.map(function(d){ return d>0 ? 1 : 0;}).reduce(function(a,b){return a+b}) != width;})
+  if(newboard.length < this.board.length) {
+    this.score.push(this.score.shift() + this.updateScore(this.board.length - newboard.length));
+    d3.range(this.board.length - newboard.length).map(function(){
+      newboard.unshift(d3.range(width).map(function(){return 0;}));
+    });
+  }
+  d3.select('body').select('div.tetris-panel').selectAll('div.score')
+                   .data(this.score)
+                   .text(function(d) { return "Score: "+d; });
+  return newboard;
+};
+
+Tetris.prototype.renderBoard = function() {
+  var colorDict;
+  colorDict = this.colorDict;
+  d3.select('svg#tetris-board'+this.boardId)
+      .selectAll('g')
+        .data(this.board)
+      .selectAll('rect')
+           .data(function(d,i){return d;})
+           .attr('x',function(d,i){return i*22;})
+           .attr('width',20)
+           .attr('height',20)
+           .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
+};
+
+Tetris.prototype.generatePiece = function() {
+  var size,
+      pRow=0,
+      pCol=0;
+  if( this.board[0].reduce(function(a,b){return a+b;}) > 0 ) {
+    return false;
+  }
+  this.currentIndex = Math.floor(Math.random()*this.pieces.length)   
+  this.currentY = 0;
+  this.currentPiece = this.pieces[this.currentIndex]; 
+  size = this.currentPiece.length; 
+  this.currentX = Math.floor((this.width - size) / 2);
+  for(i=this.currentY;i<(this.currentY+size);i++) {
+    pCol = 0;
+    for(j=this.currentX;j<(this.currentX+size);j++) {
+      if((this.currentPiece[pRow][pCol] && this.board[i][j])) {
+        return false;
+      }
+      if(this.currentPiece[pRow][pCol]) {  
+        this.board[i][j] = this.currentPiece[pRow][pCol];
+      }
+      pCol++;
+    } 
+    pRow++;
+  }
+  return true;
+};
+
 
 Tetris.prototype.pausePlay = function() {
   if(this.theend) { 
@@ -270,12 +299,12 @@ Tetris.prototype.pausePlay = function() {
     this.clock = setInterval(tick,interval);
     this.tick();
   }
-}
+};
 
 Tetris.prototype.gameOver = function() {
-  this.clock = clearInterval(clock);
+  this.clock = clearInterval(this.clock);
   this.theend = true;
-}
+};
 
 Tetris.prototype.tick = function() {
   var test = false;
@@ -287,22 +316,22 @@ Tetris.prototype.tick = function() {
   else {
     test=this.move('down');
     if(!test) {
-      this.board = this.clearLines();
+      this.board = this.clearLines(this.board,this.score);
       this.currentIndex = -1;    
     }
     else {
       this.board = test;
     }
   } 
-  this.renderBoard(this.board);
-}
+  this.renderBoard();
+};
 
 function game() {
-  t = new Tetris();
+  t = new Tetris({});
   t.board = t.makeBoard(t.width,t.height);
-  t.scoreRender();
-  t.start(t.tick,t.interval);
-  t.renderBoard(t.board);
+  t.initRender();
+  t.clock = setInterval(function(){t.tick()},t.interval)
+  t.renderBoard(t.board,t.boardId);
   //Key handlers:
   $(document).keydown(function(e){
         var test;
@@ -324,24 +353,24 @@ function game() {
         }
         if(test) {
           t.board = test;
-          t.renderBoard(t.board);
+          t.renderBoard(t.board,t.boardId);
         }
   });
 
 }
 
-function handleGameOptions(data){
-  
+function handleGameOptions(){
+  //if($('#tetris-alias').) 
 
 }
 
 
 $(document).ready(function() {
-    $('#closemodal').click(function(){
+    /*$('#closemodal').click(function(){
       $('#myModal').modal('hide'); 
     });
     $('#myModal').modal(); 
-    $('#tetris-play').click();
-    //tetris({}); 
+    $('#tetris-play').click(handleGameOptions);*/
+    game();
 });
 

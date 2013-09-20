@@ -8,7 +8,7 @@
   <script type="text/javascript" src="static/js/jquery.min.js"></script>
   <script type="text/javascript" src="static/js/tetris.js"></script>
   <script type="text/javascript" src="static/js/bootstrap.js"></script>
-  <script type="text/javascript" src="static/js/socket.io-client.js"></script>
+  <script type="text/javascript" src="static/js/socket.io.js"></script>
   <link href="static/css/bootstrap.css" rel="stylesheet"> 
   <link rel="stylesheet" type="text/css" href="static/css/tetris.css">
 </head>
@@ -24,6 +24,7 @@ down arrow: gravity
 space: toggle pause/play
 </div>
 <div id="board-container1" class="box">
+  <div id="tetris-score1"></div>
   <svg id="tetris-board1">
   </svg>
 </div>
@@ -32,6 +33,7 @@ space: toggle pause/play
   </svg>
 </div>
 <div id="board-container2" class="box">
+  <div id="tetris-score2"></div>
   <svg id="tetris-board2">
   </svg>
 </div>
@@ -45,7 +47,11 @@ space: toggle pause/play
         </div>
         <div class="modal-body">
           <div class="input-group">
-            <input type="text" class="form-control-sm" placeholder="Alias">
+            <div class="form-group has-error">
+              <label class="control-label error-hidden" for="tetris-alias">Enter a valid alias</label>
+              <input type="text" class="form-control-sm" id="tetris-alias" placeholder="Alias">
+            </div>
+            
             <div class="radio">
               <label>
                 <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
