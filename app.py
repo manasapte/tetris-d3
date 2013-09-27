@@ -4,13 +4,9 @@ import json
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-@app.route('/tetris.html')
+@app.route('/tetris')
 def index():
     return render_template('tetris.html') 
-
-@app.route('/test')
-def test():
-    return render_template('modalTest.html') 
 
 @app.route('/socket.io/<path:rest>')
 def push_stream(rest):
