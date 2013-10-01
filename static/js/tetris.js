@@ -373,8 +373,10 @@ function handleGameOptions(){
        console.log('player connected');
      });
      socket.on('login',function(data){
-       console.log('logged in with id: '+data);
+       console.log('logged in with id: '+data.id+" and partner id: "+data.partner);
+       $('#tetris-play').button('reset')
      });
+     $('#tetris-play').button('loading')
      socket.emit('login')
   }
   else {
