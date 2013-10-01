@@ -8,10 +8,10 @@ div.score {
   color: white;
 }
 
-label.error-hide {
+label.error-hidden {
   display: none;
 }
 
-label.error-show {
+label.error-visible {
   display: block
 }

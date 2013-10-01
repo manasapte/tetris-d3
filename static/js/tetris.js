@@ -360,7 +360,13 @@ function game() {
 }
 
 function handleGameOptions(){
-  //if($('#tetris-alias').) 
+  console.log('in handleoptions');
+  if($('#tetris-alias').val().trim() == "") {
+    console.log('no alias');
+    $('#error-alias').removeClass('error-hidden')
+                     .addClass('error-visible');
+    return;
+  }
   if($('#optionsRadios2').prop('checked')) {
      var socket = io.connect('/players'); 
      socket.on('connect',function(data){
@@ -381,6 +387,10 @@ function handleGameOptions(){
 $(document).ready(function() {
   $('#closemodal').click(function(){
     $('#myModal').modal('hide'); 
+  });
+  $('#tetris-alias').click(function(){
+    $('#error-alias').removeClass('error-visible')
+                     .addClass('error-hidden'); 
   });
   $('#myModal').modal(); 
   $('#tetris-play').click(handleGameOptions);
