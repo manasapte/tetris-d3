@@ -361,16 +361,29 @@ function game() {
 
 function handleGameOptions(){
   //if($('#tetris-alias').) 
-
+  if($('#optionsRadios2').prop('checked')) {
+     var socket = io.connect('/players'); 
+     socket.on('connect',function(data){
+       console.log('player connected');
+     });
+     socket.on('login',function(data){
+       console.log('logged in with id: '+data);
+     });
+     socket.emit('login')
+  }
+  else {
+    $('#myModal').modal('hide'); 
+    game();
+  } 
 }
 
 
 $(document).ready(function() {
-    /*$('#closemodal').click(function(){
-      $('#myModal').modal('hide'); 
-    });
-    $('#myModal').modal(); 
-    $('#tetris-play').click(handleGameOptions);*/
-    game();
+  $('#closemodal').click(function(){
+    $('#myModal').modal('hide'); 
+  });
+  $('#myModal').modal(); 
+  $('#tetris-play').click(handleGameOptions);
+  //game();
 });
 
