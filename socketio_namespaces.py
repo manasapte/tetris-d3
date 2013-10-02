@@ -1,6 +1,7 @@
 from socketio.namespace import BaseNamespace
 import redis
 import signal
+import json
 import time
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -23,8 +24,9 @@ class PlayersNamespace(BaseNamespace):
     for item in self.ps.listen():
       print 'got an item from listen'+str(item)
       if(item['type'] == 'message'):
-        self.partner_id = item['data']['partner']
-        self.emit('login',{'id':self.id,'partner':item['data']['partner'],'pieces':item['data']['pieces']})
+        data = json.loads(item['data'])
+        self.partner_id = int(data['partner'])
+        self.emit('login',{'id':self.id,'partner': data['partner'],'pieces':data['pieces']})
       
   def disconnect(self, *args, **kwargs):
     print "Got a socket disconnection" # debug
