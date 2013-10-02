@@ -12,6 +12,8 @@ class PlayersNamespace(BaseNamespace):
   
   def on_sync(self,packet):
     r.set(self.id,packet['data']) 
+    if self.partner_id is not None and self.partner_id != -1:
+      self.emit('sync',{'data':r.get(self.partner_id)})
   
   def on_login(self, packet):
     self.id = r.get('sessionid')
@@ -21,7 +23,8 @@ class PlayersNamespace(BaseNamespace):
     for item in self.ps.listen():
       print 'got an item from listen'+str(item)
       if(item['type'] == 'message'):
-        self.emit('login',{'id':self.id,'partner':item['data']})
+        self.partner_id = item['data']['partner']
+        self.emit('login',{'id':self.id,'partner':item['data']['partner'],'pieces':item['data']['pieces']})
       
   def disconnect(self, *args, **kwargs):
     print "Got a socket disconnection" # debug

@@ -23,6 +23,13 @@ function Tetris(params) {
         6 : '800080',
         7 : 'FF0000'
       }
+
+      this.nextPiece = d3.range(4).map(function(){
+        return d3.range(4).map(function(){
+          return 0;
+        });
+      }); 
+      
       this.pieces = params.pieces || [
         [  [3, 3, 3, 3],
            [0, 0, 0, 0],
@@ -207,6 +214,20 @@ Tetris.prototype.initRender = function() {
                    .append('div')
                      .attr('class','score')
                      .text(function(d) { return "Score: "+d; });
+  nextProw = d3.select('svg#tetris-nextpiece'+this.boardId).selectAll('g')
+               .data(this.nextPiece)
+               .enter()
+               .append('g') 
+                 .attr('transform',function(d,i){ return 'translate(0,'+i*22+')';})
+  nextPcells = nextProw.selectAll('rect')
+                         .data(function(d,i){return d;})               
+                       .enter()
+                       .append('rect')
+                         .attr('x',function(d,i){return i*22;})
+                         .attr('width',20)
+                         .attr('height',20)
+                         .attr('style','fill:DAF0ED')
+
 
   row = d3.select('svg#tetris-board'+this.boardId).selectAll('g')
                 .data(this.board)
@@ -373,7 +394,7 @@ function handleGameOptions(){
        console.log('player connected');
      });
      socket.on('login',function(data){
-       console.log('logged in with id: '+data.id+" and partner id: "+data.partner);
+       console.log('logged in with id: '+data.id+" and partner id: "+data.partner+" and pieces: "+data.pieces);
        $('#tetris-play').button('reset')
      });
      $('#tetris-play').button('loading')
