@@ -256,11 +256,12 @@ Tetris.prototype.clearLines = function() {
   newboard = this.board.filter(function(test){return test.map(function(d){ return d>0 ? 1 : 0;}).reduce(function(a,b){return a+b}) != width;})
   if(newboard.length < this.board.length) {
     this.score.push(this.score.shift() + this.updateScore(this.board.length - newboard.length));
+    console.log("this score: "+this.score);
     d3.range(this.board.length - newboard.length).map(function(){
       newboard.unshift(d3.range(width).map(function(){return 0;}));
     });
   }
-  d3.select('body').select('div.tetris-panel').selectAll('div.score')
+  d3.select('body').select('div#tetris-score'+this.boardId).selectAll('div.score')
                    .data(this.score)
                    .text(function(d) { return "Score: "+d; });
   return newboard;
