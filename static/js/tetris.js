@@ -1,5 +1,8 @@
 function Tetris(params) {
+      this.gameId = params.gameId || -1;
       this.board = params.board || [],
+      this.syncHandler = params.syncHandler || false;
+      this.secondPlayer = params.secondPlayer || false;
       this.boardId = params.boardId || 1,
       this.clock = params.clock || undefined,
       this.theend = params.theend || false,
@@ -384,13 +387,63 @@ Tetris.prototype.tick = function() {
       this.board = test;
     }
   } 
+  if(this.syncHandler) {
+    this.syncHandler(this.board,this.secondPlayer);
+  }
   this.renderBoard();
   this.nextPrender();
 };
 
-function game() {
+
+function GameManager() {
+  this.socket = false;
+}
+
+GameManager.prototype.handleGameOptions = function(){
+  var game;
+  game = this.game;
+  if($('#tetris-alias').val().trim() == "") {
+    $('#error-alias').removeClass('error-hidden')
+                     .addClass('error-visible');
+    return;
+  }
+  this.socket = io.connect('/players'); 
+  this.socket.on('connect',function(data){
+    console.log('player connected');
+  });
+  
+  this.socket.on('login',function(data){
+    console.log('logged in with id: '+data.id+" and partner id: "+data.partner+" and pieces: "+data.pieces);
+    $('#tetris-play').button('reset')
+
+    $('#myModal').modal('hide'); 
+    multi = false;
+    if(data.partner.id != -1) {
+      multi= true;
+    }
+    game(multi,data.pieces);
+  });
+
+  if($('#optionsRadios2').prop('checked')) {
+    $('#tetris-play').button('loading')
+    this.socket.emit('login',{'multi':true})
+  }
+  else {
+    this.socket.emit('login',{'multi':false}) 
+  }
+};
+
+
+GameManager.prototype.game = function(multi,pieces) {
   t = new Tetris({});
   t.board = t.makeBoard(t.width,t.height);
+  if(multi) {
+    t.syncHandler = this.stateSync;
+    s = new Tetris({'boardId':2})
+    s.board = s.makeBoard(s.width,s.height);
+    s.initRender();
+    t.secondPlayer = s;
+  }
   t.initRender();
   t.clock = setInterval(function(){t.tick()},t.interval)
   t.renderBoard(t.board,t.boardId);
@@ -419,36 +472,20 @@ function game() {
         }
   });
 
-}
+};
 
-function handleGameOptions(){
-  console.log('in handleoptions');
-  if($('#tetris-alias').val().trim() == "") {
-    console.log('no alias');
-    $('#error-alias').removeClass('error-hidden')
-                     .addClass('error-visible');
-    return;
-  }
-  if($('#optionsRadios2').prop('checked')) {
-     var socket = io.connect('/players'); 
-     socket.on('connect',function(data){
-       console.log('player connected');
-     });
-     socket.on('login',function(data){
-       console.log('logged in with id: '+data.id+" and partner id: "+data.partner+" and pieces: "+data.pieces);
-       $('#tetris-play').button('reset')
-     });
-     $('#tetris-play').button('loading')
-     socket.emit('login')
-  }
-  else {
-    $('#myModal').modal('hide'); 
-    game();
-  } 
-}
+GameManager.prototype.stateSync = function(board,secondPlayer) {
+  this.socket.emit('sync',{'board':board});
+  this.socket.on('sync',function(data){
+    secondPlayer.board = data.partnerData;
+    secondPlayer.renderBoard(secondPlayer.board,secondPlayer.boardId)
+  });
+};
+
 
 
 $(document).ready(function() {
+  var gm = new GameManager();
   $('#closemodal').click(function(){
     $('#myModal').modal('hide'); 
   });
@@ -457,7 +494,6 @@ $(document).ready(function() {
                      .addClass('error-hidden'); 
   });
   $('#myModal').modal(); 
-  $('#tetris-play').click(handleGameOptions);
-  //game();
+  $('#tetris-play').click(function(){gm.handleGameOptions()});
 });
 
