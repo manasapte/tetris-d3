@@ -12,9 +12,11 @@ class PlayersNamespace(BaseNamespace):
     self.ps = r.pubsub()
   
   def on_sync(self,packet):
+    print("in on sync and packet args: "+str(packet['args']));
     r.set(self.id,json.dumps(packet['args'][0]['data']))
-    if self.partner_id is not None and self.partner_id != -1:
-      self.emit('sync',{'partnerData':json.loads(r.get(self.partner_id))})
+    #if self.partner_id is not None and self.partner_id != -1:
+    #  self.emit('sync',{'partnerData':json.loads(r.get(self.partner_id))})
+    print("don test")
   
   def on_login(self, packet):
     self.id = r.get('sessionid')
