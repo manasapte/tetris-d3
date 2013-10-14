@@ -1,4 +1,5 @@
 function Tetris(params) {
+      console.log("params: "+JSON.stringify(params));
       this.gameId = params.gameId || -1;
       this.board = params.board || [],
       this.secondPlayer = params.secondPlayer || false;
@@ -58,8 +59,7 @@ function Tetris(params) {
         ]
       ];
       randLength = this.pieces.length;
-      this.randPieces = params.randPieces || d3.range(10000).map(function(){
-                                               return Math.floor(Math.random()*randLength);});
+      this.randPieces = params.randPieces || d3.range(10000).map(function(){return Math.floor(Math.random()*randLength);});
 }
 
 Tetris.prototype.move = function(direction) {
@@ -405,7 +405,7 @@ var handleGameOptions = function(socket){
 
     $('#myModal').modal('hide'); 
     multi = false;
-    if(data.partner.id != -1) {
+    if(data.partner != -1) {
       multi= true;
     }
     game(multi,data.pieces,socket);
@@ -421,9 +421,10 @@ var handleGameOptions = function(socket){
 };
 
 var game = function(multi,pieces,socket) {
-  t = new Tetris({});
+  t = new Tetris({'randPieces':pieces});
   t.board = t.makeBoard(t.width,t.height);
   if(multi) {
+    console.log('in game and pieces: '+pieces);
     s = new Tetris({'boardId':2})
     s.board = s.makeBoard(s.width,s.height);
     s.initRender();
@@ -432,7 +433,9 @@ var game = function(multi,pieces,socket) {
   t.initRender();
   t.clock = setInterval(function(){
     t.tick();
-    socket.emit('sync',{'board':t.board});
+    //console.log('emitting sync')
+    //ret = socket.emit('sync',{'board':t.board});
+    //console.log('emitted and return: '+JSON.stringify(ret))
     if(multi) {
       socket.on('sync',function(data){
         s.board = data.partnerData;
@@ -469,8 +472,8 @@ var game = function(multi,pieces,socket) {
 }
 
 
+var socket;
 $(document).ready(function() {
-  var socket;
   $('#closemodal').click(function(){
     $('#myModal').modal('hide'); 
   });
