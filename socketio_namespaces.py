@@ -8,17 +8,18 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 class PlayersNamespace(BaseNamespace):
   def recv_connect(self):
-    print "Got a socket connection" # debug
     self.ps = r.pubsub()
   
   def on_sync(self,packet):
-    data = packet.get('args')[0].get('board')
-    print "setting data: %s for id: %s and partner: %s"%(data,self.id,self.partner_id)
+    pData = packet.get('args')[0]
+    board = pData.get('board')
+    nextIndex = pData.get('nextIndex')
+    score = pData.get('score')
+    data = json.dumps({'board':board,'nextIndex':nextIndex,'score':score})
     r.set(self.id,data)
     partner_data = None
     if self.partner_id is not None and self.partner_id != -1:
       partner_data = r.get(self.partner_id) 
-      print "part data: ",partner_data 
       self.emit('sync',{'partnerData':partner_data})
   
   def on_login(self, packet):

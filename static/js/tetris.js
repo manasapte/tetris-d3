@@ -287,6 +287,12 @@ Tetris.prototype.updateScore = d3.scale.linear()
                           .domain([1,4])
                           .range([100,400]);
 
+Tetris.prototype.scoreRender = function() {
+  d3.select('body').select('div#tetris-score'+this.boardId).selectAll('div.score')
+                   .data(this.score)
+                   .text(function(d) { return "Score: "+d; });
+}
+
 Tetris.prototype.clearLines = function() {
   var newboard,
       width;
@@ -299,9 +305,7 @@ Tetris.prototype.clearLines = function() {
       newboard.unshift(d3.range(width).map(function(){return 0;}));
     });
   }
-  d3.select('body').select('div#tetris-score'+this.boardId).selectAll('div.score')
-                   .data(this.score)
-                   .text(function(d) { return "Score: "+d; });
+  this.scoreRender();
   return newboard;
 };
 
@@ -437,16 +441,20 @@ var game = function(multi,pieces,socket) {
   t.clock = setInterval(function(){
     t.tick();
     console.log('emitting sync')
-    ret = socket.emit('sync',{'board':t.board});
+    ret = socket.emit('sync',{"board":t.board,"score":t.score,"nextIndex":t.nextIndex});
     if(multi) {
-      socket.on('sync',function(data){
-        //console.log('in client sync handler and data: '+JSON.stringify(data));
-        s.board = JSON.parse(data.partnerData);
-        s.renderBoard(s.board,s.boardId);
+      socket.on('sync', function(data){
+        data = JSON.parse(data.partnerData);
+        s.board = data.board;
+        s.nextIndex = data.nextIndex;
+        s.score = data.score;
+        s.renderBoard();
+        s.nextPrender();
+        s.scoreRender();
       });
     }
   },t.interval)
-  t.renderBoard(t.board,t.boardId);
+  t.renderBoard();
   //Key handlers:
   $(document).keydown(function(e){
         var test;
@@ -468,7 +476,7 @@ var game = function(multi,pieces,socket) {
         }
         if(test) {
           t.board = test;
-          t.renderBoard(t.board,t.boardId);
+          t.renderBoard();
         }
   });
 
