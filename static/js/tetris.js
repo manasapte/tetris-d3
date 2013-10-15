@@ -1,4 +1,7 @@
 function Tetris(params) {
+      if(!params) {
+        params = {};
+      }
       console.log("params: "+JSON.stringify(params));
       this.gameId = params.gameId || -1;
       this.board = params.board || [],
@@ -421,10 +424,10 @@ var handleGameOptions = function(socket){
 };
 
 var game = function(multi,pieces,socket) {
-  t = new Tetris({'randPieces':pieces});
+  t = new Tetris();
   t.board = t.makeBoard(t.width,t.height);
   if(multi) {
-    console.log('in game and pieces: '+pieces);
+    t.randPieces = pieces;
     s = new Tetris({'boardId':2})
     s.board = s.makeBoard(s.width,s.height);
     s.initRender();
@@ -433,11 +436,11 @@ var game = function(multi,pieces,socket) {
   t.initRender();
   t.clock = setInterval(function(){
     t.tick();
-    //console.log('emitting sync')
-    //ret = socket.emit('sync',{'board':t.board});
-    //console.log('emitted and return: '+JSON.stringify(ret))
+    console.log('emitting sync')
+    ret = socket.emit('sync',{'board':t.board});
     if(multi) {
       socket.on('sync',function(data){
+        console.log('in client sync handler and data: '+JSON.stringify(data));
         s.board = data.partnerData;
         s.renderBoard(s.board,s.boardId);
       });
