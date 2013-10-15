@@ -440,8 +440,8 @@ var game = function(multi,pieces,socket) {
     ret = socket.emit('sync',{'board':t.board});
     if(multi) {
       socket.on('sync',function(data){
-        console.log('in client sync handler and data: '+JSON.stringify(data));
-        s.board = data.partnerData;
+        //console.log('in client sync handler and data: '+JSON.stringify(data));
+        s.board = JSON.parse(data.partnerData);
         s.renderBoard(s.board,s.boardId);
       });
     }
