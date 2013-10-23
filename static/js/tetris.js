@@ -483,8 +483,8 @@ var game = function(multi,pieces,socket) {
 }
 
 
-var socket;
 $(document).ready(function() {
+  var socket;
   $('#closemodal').click(function(){
     $('#myModal').modal('hide'); 
   });
