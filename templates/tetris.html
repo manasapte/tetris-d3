@@ -7,6 +7,9 @@
   <script type="text/javascript" src="static/js/d3.v3.min.js"></script>
   <script type="text/javascript" src="static/js/jquery.min.js"></script>
   <script type="text/javascript" src="static/js/tetris.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap.js"></script>
+  <script type="text/javascript" src="static/js/socket.io.js"></script>
+  <link href="static/css/bootstrap.css" rel="stylesheet"> 
   <link rel="stylesheet" type="text/css" href="static/css/tetris.css">
 </head>
 <body>
@@ -20,7 +23,63 @@ up arrow: rotate
 down arrow: gravity
 space: toggle pause/play
 </div>
-<svg id="tetris-board">
-</svg>
+<div class="row" id="tetris-container">
+  <div id="board-container1" class="col-xs-4">
+    <div id="tetris-score1"></div>
+    <svg id="tetris-board1">
+    </svg>
+  </div>
+  <div class="col-xs-4">
+    <div class="row">
+      <svg id="tetris-nextpiece1">
+      </svg>
+    </div>
+    <div class="row">
+      <svg id="tetris-nextpiece2">
+      </svg>
+    </div>
+  </div>
+  <div id="board-container2" class="col-xs-4">
+    <div id="tetris-score2"></div>
+    <svg id="tetris-board2">
+    </svg>
+  </div>
+</div>
+<!-- Modal -->
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" id="closemodal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Game Settings</h4>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <div class="form-group has-error">
+              <label class="control-label error-hidden" for="tetris-alias" id="error-alias">Enter a valid alias</label>
+              <input type="text" class="form-control-sm" id="tetris-alias" placeholder="Alias">
+            </div>
+            
+            <div class="radio">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                Single Player
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                Multi Player
+              </label>
+            </div>
+            <button type="button" id="tetris-play" class="btn btn-sm btn-primary" data-loading-text="looking for players...">Play!</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
 </body>
 </html>

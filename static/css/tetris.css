@@ -1,3 +1,7 @@
+div.main-tetris-container {
+  width: 100%;
+}
+
 div.score {
   font: 10px sans-serif;
   width: 218px;
@@ -7,3 +11,16 @@ div.score {
   margin: 1px;
   color: white;
 }
+
+label.error-hidden {
+  display: none;
+}
+
+label.error-visible {
+  display: block
+}
+
+div.box {
+  display: inline-block;
+}
+
