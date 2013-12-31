@@ -9,7 +9,7 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 class PlayersNamespace(BaseNamespace):
   def recv_connect(self):
     self.ps = r.pubsub()
-  
+
   def on_sync(self,packet):
     pData = packet.get('args')[0]
     board = pData.get('board')
@@ -18,10 +18,15 @@ class PlayersNamespace(BaseNamespace):
     data = json.dumps({'board':board,'nextIndex':nextIndex,'score':score})
     r.set(self.id,data)
     partner_data = None
-    if self.partner_id is not None and self.partner_id != -1:
-      partner_data = r.get(self.partner_id) 
+    try:
+      if self.partner_id != -1:
+        partner_data = r.get(self.partner_id)
+        self.emit('sync',{'partnerData':partner_data})
+    except AttributeError:
+      partner_data = r.get(self.partner_id)
       self.emit('sync',{'partnerData':partner_data})
-  
+
+
   def on_login(self, packet):
     try:
       self.id = r.get('sessionid')
