@@ -357,20 +357,7 @@ Tetris.prototype.generatePiece = function() {
   return true;
 };
 
-
-Tetris.prototype.pausePlay = function() {
-  if(this.theend) { 
-    return;
-  }
-  if(this.clock) {
-    this.clock = clearInterval(clock);
-  }
-  else {
-    this.clock = setInterval(tick,interval);
-    this.tick();
-  }
-};
-
+ 
 Tetris.prototype.gameOver = function() {
   this.clock = clearInterval(this.clock);
   this.theend = true;
@@ -427,18 +414,8 @@ var handleGameOptions = function(socket){
   }
 };
 
-var game = function(multi,pieces,socket) {
-  t = new Tetris();
-  t.board = t.makeBoard(t.width,t.height);
-  if(multi) {
-    t.randPieces = pieces;
-    s = new Tetris({'boardId':2})
-    s.board = s.makeBoard(s.width,s.height);
-    s.initRender();
-    t.secondPlayer = s;
-  }
-  t.initRender();
-  t.clock = setInterval(function(){
+var getClock = function(socket, t, multi) {
+ return setInterval(function(){
     t.tick();
     console.log('emitting sync')
     ret = socket.emit('sync',{"board":t.board,"score":t.score,"nextIndex":t.nextIndex});
@@ -453,14 +430,29 @@ var game = function(multi,pieces,socket) {
         s.scoreRender();
       });
     }
-  },t.interval)
+  },t.interval);
+}
+
+var game = function(multi,pieces,socket) {
+  t = new Tetris();
+  t.board = t.makeBoard(t.width,t.height);
+  if(multi) {
+    t.randPieces = pieces;
+    s = new Tetris({'boardId':2})
+    s.board = s.makeBoard(s.width,s.height);
+    s.initRender();
+    t.secondPlayer = s;
+  }
+  t.initRender();
+  t.clock = getClock(socket, t, multi);
   t.renderBoard();
   //Key handlers:
   $(document).keydown(function(e){
         var test;
         e.preventDefault();
         if (e.keyCode == 32) { 
-          t.pausePlay();
+          console.log('in pause play');
+          pausePlay(socket, t, multi);
         }
         if (e.keyCode == 37) { 
           test =  t.move('left');
@@ -480,6 +472,18 @@ var game = function(multi,pieces,socket) {
         }
   });
 
+}
+
+var pausePlay = function(socket, t, multi) {
+  if(t.theend) { 
+    return;
+  }
+  if(t.clock) {
+    t.clock = clearInterval(t.clock);
+  }
+  else {
+    t.clock = getClock(socket, t, multi);
+  }
 }
 
 
