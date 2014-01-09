@@ -359,7 +359,6 @@ Tetris.prototype.generatePiece = function() {
 
  
 Tetris.prototype.gameOver = function() {
-  this.clock = clearInterval(this.clock);
   this.theend = true;
 };
 
@@ -407,28 +406,22 @@ var handleGameOptions = function(socket){
 
   if($('#optionsRadios2').prop('checked')) {
     $('#tetris-play').button('loading')
-    socket.emit('login',{'multi':true})
+    socket.emit('login', {'multi':true})
   }
   else {
-    socket.emit('login',{'multi':false}) 
+    socket.emit('login', {'multi':false}) 
   }
 };
 
-var getClock = function(socket, t, multi) {
- return setInterval(function(){
-    t.tick();
-    console.log('emitting sync')
-    ret = socket.emit('sync',{"board":t.board,"score":t.score,"nextIndex":t.nextIndex});
-    if(multi) {
-      socket.on('sync', function(data){
-        data = JSON.parse(data.partnerData);
-        s.board = data.board;
-        s.nextIndex = data.nextIndex;
-        s.score = data.score;
-        s.renderBoard();
-        s.nextPrender();
-        s.scoreRender();
-      });
+var getClock = function(socket, t) {
+  return setInterval(function(){
+    if(!t.theend) {
+      t.tick();
+      console.log('emitting sync')
+      ret = socket.emit('sync', {"board":t.board, "score":t.score, "nextIndex":t.nextIndex});
+    } 
+    else {
+      ret = socket.emit('sync', {"gameOver": true});
     }
   },t.interval);
 }
@@ -444,7 +437,19 @@ var game = function(multi,pieces,socket) {
     t.secondPlayer = s;
   }
   t.initRender();
-  t.clock = getClock(socket, t, multi);
+  t.clock = getClock(socket, t);
+  if(multi) {
+    socket.on('sync', function(data){
+      console.log('in on sync');
+      data = JSON.parse(data.partnerData);
+      s.board = data.board;
+      s.nextIndex = data.nextIndex;
+      s.score = data.score;
+      s.renderBoard();
+      s.nextPrender();
+      s.scoreRender();
+    });
+  }
   t.renderBoard();
   //Key handlers:
   $(document).keydown(function(e){
@@ -482,10 +487,9 @@ var pausePlay = function(socket, t, multi) {
     t.clock = clearInterval(t.clock);
   }
   else {
-    t.clock = getClock(socket, t, multi);
+    t.clock = getClock(socket, t);
   }
 }
-
 
 $(document).ready(function() {
   var socket;
@@ -501,6 +505,9 @@ $(document).ready(function() {
     socket = io.connect('/players'); 
     socket.on('connect',function(data){
       console.log('player connected');
+    });
+    socket.on('sync', function(data){
+      console.log('in outer sync');
     });
     handleGameOptions(socket);
   });

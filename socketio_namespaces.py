@@ -7,20 +7,33 @@ import time
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 class PlayersNamespace(BaseNamespace):
+  def __init__(self, *args, **kwargs):
+    super(PlayerNamespace, self).__init__(*args, **kwargs)
+    self.gameOver = False
+
   def recv_connect(self):
     self.ps = r.pubsub()
 
   def on_sync(self,packet):
     pData = packet.get('args')[0]
-    board = pData.get('board')
-    nextIndex = pData.get('nextIndex')
-    score = pData.get('score')
-    data = json.dumps({'board':board,'nextIndex':nextIndex,'score':score})
-    r.set(self.id,data)
+    if(not self.gameOver):
+      gameOver = pData.get('gameOver')
+      if(not gameOver):
+        score = pData.get('score')
+        board = pData.get('board')
+        nextIndex = pData.get('nextIndex')
+        data = json.dumps({'board': board, 'nextIndex': nextIndex, 'score': score})
+        r.set(self.id,data)
+      else:
+        data = json.loads(r.get(self.id))
+        data = json.dumps(data['gameOver'] = True)
+        r.set(self.id,data)
+        self.gameOver = True
     partner_data = None
     try:
       if self.partner_id != -1:
         partner_data = r.get(self.partner_id)
+        print('emitting sync for partner id: ' + str(self.partner_id) )
         self.emit('sync',{'partnerData':partner_data})
     except AttributeError:
       partner_data = r.get(self.partner_id)
