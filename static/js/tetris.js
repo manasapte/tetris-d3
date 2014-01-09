@@ -401,7 +401,7 @@ var handleGameOptions = function(socket,clock){
     if(data.partner != -1) {
       multi= true;
     }
-    game(multi,data.pieces,socket,clock);
+    game(multi,data.pieces,socket,clock,data.timeout);
   });
 
   if($('#optionsRadios2').prop('checked')) {
@@ -417,7 +417,6 @@ var getClock = function(socket, t) {
   return setInterval(function(){
     if(!t.theend) {
       t.tick();
-      console.log('emitting sync')
       ret = socket.emit('sync', {"board":t.board, "score":t.score, "nextIndex":t.nextIndex});
     } 
     else {
@@ -426,15 +425,10 @@ var getClock = function(socket, t) {
   },t.interval);
 }
 
-var game = function(multi,pieces,socket,clock) {
+var game = function(multi,pieces,socket,clock,timeout) {
   t = new Tetris();
   t.board = t.makeBoard(t.width,t.height);
   if(multi) {
-    clock = $('.counter').FlipClock({
-      autostart: false,
-      countdown: true,
-      clockFace: 'Counter'
-    });
     t.randPieces = pieces;
     s = new Tetris({'boardId':2})
     s.board = s.makeBoard(s.width,s.height);
@@ -445,7 +439,6 @@ var game = function(multi,pieces,socket,clock) {
   t.clock = getClock(socket, t);
   if(multi) {
     socket.on('sync', function(data){
-      console.log('in on sync');
       data = JSON.parse(data.partnerData);
       s.board = data.board;
       s.nextIndex = data.nextIndex;
@@ -459,6 +452,15 @@ var game = function(multi,pieces,socket,clock) {
       t.theend = true;
       console.log('final scores: '+t.score+ "," + s.score)
     });
+    clock = $('.counter').FlipClock(timeout, {
+      autostart: false,
+      countdown: true,
+      clockFace: 'Counter'
+    });
+    clock.stop(function(){
+      console.log("stop callback");
+    });
+    clock.start();
   }
   t.renderBoard();
   //Key handlers:

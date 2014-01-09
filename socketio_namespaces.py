@@ -8,7 +8,7 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 class PlayersNamespace(BaseNamespace):
   def __init__(self, *args, **kwargs):
-    super(PlayerNamespace, self).__init__(*args, **kwargs)
+    BaseNamespace.__init__(self, *args, **kwargs)
     self.gameOver = False
     self.pGameOver = False
 
@@ -27,17 +27,18 @@ class PlayersNamespace(BaseNamespace):
         r.set(self.id,data)
       else:
         data = json.loads(r.get(self.id))
-        data = json.dumps(data['gameOver'] = True)
+        data['gameOver'] = True
+        data = json.dumps(data)
         r.set(self.id,data)
         self.gameOver = True
     partner_data = None
     try:
       if self.partner_id != -1 and (not self.pGameOver):
         partner_data = r.get(self.partner_id)
+        print("partner id: "+str(self.partner_id)+" and pdata: "+partner_data)
         pdata = json.loads(partner_data)
         if(pdata.get('gameOver')):
           self.pGameOver = True
-        print('emitting sync for partner id: ' + str(self.partner_id) )
         self.emit('sync',{'partnerData':partner_data})
     except AttributeError:
       partner_data = r.get(self.partner_id)
