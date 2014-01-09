@@ -10,6 +10,7 @@ class PlayersNamespace(BaseNamespace):
   def __init__(self, *args, **kwargs):
     super(PlayerNamespace, self).__init__(*args, **kwargs)
     self.gameOver = False
+    self.pGameOver = False
 
   def recv_connect(self):
     self.ps = r.pubsub()
@@ -31,13 +32,18 @@ class PlayersNamespace(BaseNamespace):
         self.gameOver = True
     partner_data = None
     try:
-      if self.partner_id != -1:
+      if self.partner_id != -1 and (not self.pGameOver):
         partner_data = r.get(self.partner_id)
+        pdata = json.loads(partner_data)
+        if(pdata.get('gameOver')):
+          self.pGameOver = True
         print('emitting sync for partner id: ' + str(self.partner_id) )
         self.emit('sync',{'partnerData':partner_data})
     except AttributeError:
       partner_data = r.get(self.partner_id)
       self.emit('sync',{'partnerData':partner_data})
+    if(self.gameOver and self.pGameOver):
+      self.emit('done')
 
 
   def on_login(self, packet):
@@ -52,7 +58,7 @@ class PlayersNamespace(BaseNamespace):
           if(item.get('type') == 'message'):
             data = json.loads(item.get('data'))
             self.partner_id = int(data.get('partner'))
-            self.emit('login',{'id':self.id,'partner': data.get('partner'),'pieces':data.get('pieces')})
+            self.emit('login',{'id':self.id,'partner': data.get('partner'),'pieces':data.get('pieces'), 'timeout': 60})
             break
       else:
         self.emit('login',{'id':self.id,'partner': -1,'pieces':[]})

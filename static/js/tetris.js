@@ -384,7 +384,7 @@ Tetris.prototype.tick = function() {
 };
 
 
-var handleGameOptions = function(socket){
+var handleGameOptions = function(socket,clock){
   var multi;
   if($('#tetris-alias').val().trim() == "") {
     $('#error-alias').removeClass('error-hidden')
@@ -393,7 +393,7 @@ var handleGameOptions = function(socket){
   }
     
   socket.on('login',function(data){
-    console.log('logged in with id: '+data.id+" and partner id: "+data.partner+" and pieces: "+data.pieces);
+    console.log('logged in with id: '+data.id+" and partner id: "+data.partner+" and pieces: "+data.pieces + " and timeout: "+data.timeout);
     $('#tetris-play').button('reset')
 
     $('#myModal').modal('hide'); 
@@ -401,7 +401,7 @@ var handleGameOptions = function(socket){
     if(data.partner != -1) {
       multi= true;
     }
-    game(multi,data.pieces,socket);
+    game(multi,data.pieces,socket,clock);
   });
 
   if($('#optionsRadios2').prop('checked')) {
@@ -426,10 +426,15 @@ var getClock = function(socket, t) {
   },t.interval);
 }
 
-var game = function(multi,pieces,socket) {
+var game = function(multi,pieces,socket,clock) {
   t = new Tetris();
   t.board = t.makeBoard(t.width,t.height);
   if(multi) {
+    clock = $('.counter').FlipClock({
+      autostart: false,
+      countdown: true,
+      clockFace: 'Counter'
+    });
     t.randPieces = pieces;
     s = new Tetris({'boardId':2})
     s.board = s.makeBoard(s.width,s.height);
@@ -448,6 +453,11 @@ var game = function(multi,pieces,socket) {
       s.renderBoard();
       s.nextPrender();
       s.scoreRender();
+    });
+    socket.on('done', function(){
+      t.clock = clearInterval(t.clock);
+      t.theend = true;
+      console.log('final scores: '+t.score+ "," + s.score)
     });
   }
   t.renderBoard();
@@ -492,7 +502,8 @@ var pausePlay = function(socket, t, multi) {
 }
 
 $(document).ready(function() {
-  var socket;
+  var socket,
+      clock;
   $('#closemodal').click(function(){
     $('#myModal').modal('hide'); 
   });
@@ -506,10 +517,7 @@ $(document).ready(function() {
     socket.on('connect',function(data){
       console.log('player connected');
     });
-    socket.on('sync', function(data){
-      console.log('in outer sync');
-    });
-    handleGameOptions(socket);
+    handleGameOptions(socket, clock);
   });
 });
 
