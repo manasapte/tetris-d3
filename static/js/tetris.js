@@ -427,11 +427,11 @@ var getClock = function(socket, t) {
   },t.interval);
 }
 
-var runCounter = function(clock) { 
+var runCounter = function(socket, clock) { 
   if(clock.getTime().time != -1){
     setTimeout(function(){
       clock.decrement();
-      runCounter(clock)
+      runCounter(socket, clock)
     }, 1000)
   }
   else {
@@ -471,7 +471,7 @@ var game = function(multi,pieces,socket,clock,timeout) {
       countdown: true,
       clockFace: 'Counter'
     });
-    runCounter(clock);
+    runCounter(socket, clock);
   }
   t.renderBoard();
   //Key handlers:
