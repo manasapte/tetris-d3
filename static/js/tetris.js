@@ -427,6 +427,18 @@ var getClock = function(socket, t) {
   },t.interval);
 }
 
+var runCounter = function(clock) { 
+  if(clock.getTime().time != -1){
+    setTimeout(function(){
+      clock.decrement();
+      runCounter(clock)
+    }, 1000)
+  }
+  else {
+    socket.emit('timeup',{timeup: true})
+  }
+}
+
 var game = function(multi,pieces,socket,clock,timeout) {
   t = new Tetris();
   t.board = t.makeBoard(t.width,t.height);
@@ -454,10 +466,12 @@ var game = function(multi,pieces,socket,clock,timeout) {
       t.theend = true;
       console.log('final scores: '+t.score+ "," + s.score)
     });
+    console.log("got timeout: "+timeout);
     clock = $('.counter').FlipClock(timeout, {
       countdown: true,
       clockFace: 'Counter'
     });
+    runCounter(clock);
   }
   t.renderBoard();
   //Key handlers:

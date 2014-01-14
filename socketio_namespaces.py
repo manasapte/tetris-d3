@@ -15,8 +15,10 @@ class PlayersNamespace(BaseNamespace):
   def recv_connect(self):
     self.ps = r.pubsub()
 
+  def on_timeup(self, packet):
+    self.emit('done')
+
   def on_sync(self,packet):
-    print('on sync and id: '+self.id)
     pData = packet.get('args')[0]
     if(not self.gameOver):
       gameOver = pData.get('gameOver')
@@ -36,7 +38,6 @@ class PlayersNamespace(BaseNamespace):
     try:
       if self.partner_id != -1 and (not self.pGameOver):
         partner_data = r.get(self.partner_id)
-        #print("partner id: "+str(self.partner_id)+" and pdata: "+partner_data)
         pdata = json.loads(partner_data)
         if(pdata.get('gameOver')):
           self.pGameOver = True
@@ -58,11 +59,10 @@ class PlayersNamespace(BaseNamespace):
         r.lpush('players',self.id)
         self.ps.subscribe([self.id])
         for item in self.ps.listen():
-          print 'got an item from listen'+str(item)
           if(item.get('type') == 'message'):
             data = json.loads(item.get('data'))
             self.partner_id = int(data.get('partner'))
-            self.emit('login',{'id':self.id,'partner': data.get('partner'),'pieces':data.get('pieces'), 'timeout': 60})
+            self.emit('login',{'id':self.id,'partner': data.get('partner'),'pieces':data.get('pieces'), 'timeout': 120})
             break
       else:
         self.emit('login',{'id':self.id,'partner': -1,'pieces':[]})
