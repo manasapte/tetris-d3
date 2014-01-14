@@ -16,6 +16,7 @@ class PlayersNamespace(BaseNamespace):
     self.ps = r.pubsub()
 
   def on_sync(self,packet):
+    print('on sync and id: '+self.id)
     pData = packet.get('args')[0]
     if(not self.gameOver):
       gameOver = pData.get('gameOver')
@@ -24,20 +25,18 @@ class PlayersNamespace(BaseNamespace):
         board = pData.get('board')
         nextIndex = pData.get('nextIndex')
         data = json.dumps({'board': board, 'nextIndex': nextIndex, 'score': score})
-        print("saving data: "+str(data) + " for id: "+self.id)
         r.set(self.id,data)
       else:
         data = json.loads(r.get(self.id))
         data['gameOver'] = True
         data = json.dumps(data)
-        print(" game over set saving data: "+str(data) + " for id: "+self.id)
         r.set(self.id,data)
         self.gameOver = True
     partner_data = None
     try:
       if self.partner_id != -1 and (not self.pGameOver):
         partner_data = r.get(self.partner_id)
-        print("partner id: "+str(self.partner_id)+" and pdata: "+partner_data)
+        #print("partner id: "+str(self.partner_id)+" and pdata: "+partner_data)
         pdata = json.loads(partner_data)
         if(pdata.get('gameOver')):
           self.pGameOver = True
@@ -45,6 +44,8 @@ class PlayersNamespace(BaseNamespace):
     except AttributeError:
       partner_data = r.get(self.partner_id)
       self.emit('sync',{'partnerData':partner_data})
+    except TypeError:
+      print "consuming typeerror"
     if(self.gameOver and self.pGameOver):
       self.emit('done')
 

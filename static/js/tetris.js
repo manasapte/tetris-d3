@@ -417,6 +417,7 @@ var getClock = function(socket, t) {
   return setInterval(function(){
     if(!t.theend) {
       t.tick();
+      console.log('emitting sync');
       ret = socket.emit('sync', {"board":t.board, "score":t.score, "nextIndex":t.nextIndex});
     } 
     else {
