@@ -420,6 +420,7 @@ var getClock = function(socket, t) {
       ret = socket.emit('sync', {"board":t.board, "score":t.score, "nextIndex":t.nextIndex});
     } 
     else {
+      console.log("emitting game over sync");
       ret = socket.emit('sync', {"gameOver": true});
     }
   },t.interval);
@@ -453,14 +454,9 @@ var game = function(multi,pieces,socket,clock,timeout) {
       console.log('final scores: '+t.score+ "," + s.score)
     });
     clock = $('.counter').FlipClock(timeout, {
-      autostart: false,
       countdown: true,
       clockFace: 'Counter'
     });
-    clock.stop(function(){
-      console.log("stop callback");
-    });
-    clock.start();
   }
   t.renderBoard();
   //Key handlers:

@@ -24,11 +24,13 @@ class PlayersNamespace(BaseNamespace):
         board = pData.get('board')
         nextIndex = pData.get('nextIndex')
         data = json.dumps({'board': board, 'nextIndex': nextIndex, 'score': score})
+        print("saving data: "+str(data) + " for id: "+self.id)
         r.set(self.id,data)
       else:
         data = json.loads(r.get(self.id))
         data['gameOver'] = True
         data = json.dumps(data)
+        print(" game over set saving data: "+str(data) + " for id: "+self.id)
         r.set(self.id,data)
         self.gameOver = True
     partner_data = None
