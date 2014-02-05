@@ -62,7 +62,7 @@ class PlayersNamespace(BaseNamespace):
           if(item.get('type') == 'message'):
             data = json.loads(item.get('data'))
             self.partner_id = int(data.get('partner'))
-            self.emit('login',{'id':self.id,'partner': data.get('partner'),'pieces':data.get('pieces'), 'timeout': 120})
+            self.emit('login',{'id':self.id,'partner': data.get('partner'),'pieces':data.get('pieces'), 'timeout': 180})
             break
       else:
         self.emit('login',{'id':self.id,'partner': -1,'pieces':[]})
