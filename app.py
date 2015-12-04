@@ -8,7 +8,11 @@ app.config['DEBUG'] = True
 
 @app.route('/tetris')
 def index():
-    return render_template('tetris.html') 
+    return render_template('tetris.html')
+
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 @app.route('/socket.io/<path:rest>')
 def push_stream(rest):

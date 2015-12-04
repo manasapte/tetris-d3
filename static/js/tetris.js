@@ -410,7 +410,8 @@ var handleGameOptions = function(socket){
     console.log('logged in with id: '+data.id+" and partner id: "+data.partner+" and pieces: "+data.pieces);
     $('#tetris-play').button('reset')
 
-    $('#myModal').modal('hide'); 
+    $('#gameModal').modal("hide");
+
     multi = false;
     if(data.partner != -1) {
       multi= true;
@@ -479,21 +480,27 @@ var game = function(multi,pieces,socket) {
           t.renderBoard();
         }
   });
-
 }
 
 
 $(document).ready(function() {
+  alert("im running")
   var socket;
   $('#closemodal').click(function(){
-    $('#myModal').modal('hide'); 
+    $('#gameModal').hide();
   });
+
   $('#tetris-alias').click(function(){
     $('#error-alias').removeClass('error-visible')
                      .addClass('error-hidden'); 
   });
-  $('#myModal').modal(); 
+
+  $('#gameModal').modal({
+    show: true
+  });
+
   $('#tetris-play').click(function(){
+    console.log("closing gamemodal")
     socket = io.connect('/players'); 
     socket.on('connect',function(data){
       console.log('player connected');
@@ -501,4 +508,3 @@ $(document).ready(function() {
     handleGameOptions(socket);
   });
 });
-

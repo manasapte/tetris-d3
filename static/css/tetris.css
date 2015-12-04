@@ -1,5 +1,22 @@
-div.main-tetris-container {
+body, html, .container-fluid, #tetris-board {
+  height: 100%;
+}
+
+svg {
   width: 100%;
+  height: auto;
+}
+
+.fullheight {
+  height: 100%;
+}
+
+.headerrow {
+  height: 5%;
+}
+
+.gamerow {
+  height: 90%;
 }
 
 div.score {

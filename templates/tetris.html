@@ -13,73 +13,77 @@
   <link rel="stylesheet" type="text/css" href="static/css/tetris.css">
 </head>
 <body>
-<div class="panel">
-Welcome to D3 tetris!
 
-Directions:
-left arrow: left
-right arrow: right
-up arrow: rotate
-down arrow: gravity
-space: toggle pause/play
-</div>
-<div class="row" id="tetris-container">
-  <div id="board-container1" class="col-xs-4">
-    <div id="tetris-score1"></div>
-    <svg id="tetris-board1">
-    </svg>
+<div class="fluid-container" id="tetris-container">
+  <div class="row headerrow">
+        Welcome to D3 tetris!
+
+        Directions:
+        left arrow: left
+        right arrow: right
+        up arrow: rotate
+        down arrow: gravity
+        space: toggle pause/play
   </div>
-  <div class="col-xs-4">
-    <div class="row">
-      <svg id="tetris-nextpiece1">
-      </svg>
-    </div>
-    <div class="row">
-      <svg id="tetris-nextpiece2">
-      </svg>
-    </div>
-  </div>
-  <div id="board-container2" class="col-xs-4">
-    <div id="tetris-score2"></div>
-    <svg id="tetris-board2">
-    </svg>
-  </div>
-</div>
-<!-- Modal -->
-  <div class="modal fade" id="myModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" id="closemodal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Game Settings</h4>
-        </div>
-        <div class="modal-body">
-          <div class="input-group">
-            <div class="form-group has-error">
-              <label class="control-label error-hidden" for="tetris-alias" id="error-alias">Enter a valid alias</label>
-              <input type="text" class="form-control-sm" id="tetris-alias" placeholder="Alias">
-            </div>
-            
-            <div class="radio">
-              <label>
-                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-                Single Player
-              </label>
-            </div>
-            <div class="radio">
-              <label>
-                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                Multi Player
-              </label>
-            </div>
-            <button type="button" id="tetris-play" class="btn btn-sm btn-primary" data-loading-text="looking for players...">Play!</button>
+  <div class="row gamerow">
+      <div id="board-container1" class="col-md-5">
+          <div id="tetris-score1"></div>
+          <svg id="tetris-board1">
+          </svg>
+      </div>
+      <div class="col-md-2">
+          <div class="row">
+              <svg id="tetris-nextpiece1">
+              </svg>
           </div>
+          <div class="row">
+              <svg id="tetris-nextpiece2">
+              </svg>
+          </div>
+      </div>
+      <div id="board-container2" class="col-md-5">
+          <div id="tetris-score2"></div>
+          <svg id="tetris-board2">
+          </svg>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="gameModal" tabindex="-1" role="dialog" aria-labelledby="gameModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gameModalLabel">Game Settings</h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <div class="form-group has-error">
+                        <label class="control-label error-hidden" for="tetris-alias" id="error-alias">Enter a valid alias</label>
+                        <input type="text" class="form-control-sm" id="tetris-alias" placeholder="Alias">
+                    </div>
+
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                            Single Player
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                            Multi Player
+                        </label>
+                    </div>
+                    <button type="button" id="tetris-play" class="btn btn-sm btn-primary" data-loading-text="looking for players...">Play!</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
-        <div class="modal-footer">
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
+    </div>
+</div>
 
 </body>
 </html>
