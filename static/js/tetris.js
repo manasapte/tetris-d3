@@ -177,7 +177,7 @@ Tetris.prototype.nextPrender = function() {
                        .attr('x',function(d,i){return i*22;})
                        .attr('width',20)
                        .attr('height',20)
-                       .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
+                       .attr('style',function(d,i){ return 'fill:#'+colorDict[d]; } );
 }
 
 Tetris.prototype.getNextpiece = function(index) {
@@ -264,7 +264,7 @@ Tetris.prototype.initRender = function() {
                          .attr('x',function(d,i){return i*22;})
                          .attr('width',20)
                          .attr('height',20)
-                         .attr('style','fill:DAF0ED')
+                         .attr('style','fill:#DAF0ED')
 
 
   row = d3.select('svg#tetris-board'+this.boardId).selectAll('g')
@@ -279,7 +279,7 @@ Tetris.prototype.initRender = function() {
                .attr('x',function(d,i){return i*22;})
                .attr('width',20)
                .attr('height',20)
-               .attr('style','fill:DAF0ED')
+               .attr('style','fill:#DAF0ED')
 
 };
 
@@ -320,7 +320,7 @@ Tetris.prototype.renderBoard = function() {
            .attr('x',function(d,i){return i*22;})
            .attr('width',20)
            .attr('height',20)
-           .attr('style',function(d,i){ return 'fill:'+colorDict[d]; } );
+           .attr('style',function(d,i){ return 'fill:#'+colorDict[d]; } );
 };
 
 Tetris.prototype.generatePiece = function() {
